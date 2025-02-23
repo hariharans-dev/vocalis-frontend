@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  PROJECT_NAME: "project"
+  PROJECT_NAME: "vocalis-frontend"
 
 jobs:
   build-and-push:
