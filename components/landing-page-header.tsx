@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useStackApp, useUser } from "@stackframe/stack";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
@@ -20,20 +19,13 @@ interface NavProps {
 }
 
 function SignInSignUpButtons() {
-  const app = useStackApp();
   return (
     <>
-      <Link
-        href={app.urls.signIn}
-        className={buttonVariants({ variant: "secondary" })}
-      >
+      <Link href={""} className={buttonVariants({ variant: "secondary" })}>
         Sign In
       </Link>
 
-      <Link
-        href={app.urls.signUp}
-        className={buttonVariants({ variant: "default" })}
-      >
+      <Link href={""} className={buttonVariants({ variant: "default" })}>
         Sign Up
       </Link>
     </>
@@ -41,8 +33,7 @@ function SignInSignUpButtons() {
 }
 
 function AuthButtonsInner() {
-  const user = useUser();
-
+  const user = false;
   if (user) {
     return (
       <Link
