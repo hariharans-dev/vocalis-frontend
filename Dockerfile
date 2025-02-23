@@ -1,8 +1,20 @@
-FROM ubuntu:22.04
+# Use official Node.js image (latest LTS)
+FROM node:20-alpine 
+
+# Set working directory
 WORKDIR /app
-RUN apt update && apt install -y nodejs npm
+
+# Copy package.json and package-lock.json first for better caching
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy application files
 COPY . .
+
+# Expose port
 EXPOSE 4000
-CMD ["npm","run","dev"]
+
+# Start the app
+CMD ["npm", "run", "dev"]
