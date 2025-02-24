@@ -1,3 +1,5 @@
+"use client";
+
 import { PageClient } from "./page-client";
 
 export const metadata = {
