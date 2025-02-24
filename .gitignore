@@ -8,7 +8,7 @@
 
 note.txt
 
-/app/dashboard
+/app/dashboard/
 
 # testing
 /coverage
