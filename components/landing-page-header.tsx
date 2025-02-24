@@ -21,11 +21,17 @@ interface NavProps {
 function SignInSignUpButtons() {
   return (
     <>
-      <Link href={""} className={buttonVariants({ variant: "secondary" })}>
+      <Link
+        href={"/auth/signin"}
+        className={buttonVariants({ variant: "secondary" })}
+      >
         Sign In
       </Link>
 
-      <Link href={""} className={buttonVariants({ variant: "default" })}>
+      <Link
+        href={"/auth/signup"}
+        className={buttonVariants({ variant: "default" })}
+      >
         Sign Up
       </Link>
     </>
