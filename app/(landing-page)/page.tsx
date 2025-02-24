@@ -31,18 +31,18 @@ export default async function IndexPage() {
         subtitle="Built for developers, by developers. Next.js + Shadcn UI + Stack Auth."
         primaryCtaText="Get Started"
         primaryCtaLink={""}
-        secondaryCtaText="GitHub"
-        secondaryCtaLink="https://github.com/stack-auth/stack-template"
+        secondaryCtaText="Documentation"
+        secondaryCtaLink=""
         credits={
           <>
             Crafted with ❤️ by{" "}
             <a
-              href="https://stack-auth.com"
+              href="https://github.com/hariharans-dev"
               target="_blank"
               rel="noreferrer"
               className="underline"
             >
-              Stack Auth
+              hariharans-dev
             </a>
           </>
         }
