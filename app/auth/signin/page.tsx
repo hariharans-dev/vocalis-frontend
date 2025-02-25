@@ -11,34 +11,37 @@ import { signIn } from "next-auth/react";
 
 export default function SignInForm() {
   return (
-    <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-gray-900 to-black">
-      <Card className="w-full max-w-md border border-gray-700 bg-gray-800 bg-opacity-30 backdrop-blur-lg shadow-2xl text-white p-6 rounded-lg">
-        <CardHeader className="text-center space-y-2">
-          <h3 className="text-2xl font-semibold">Sign In</h3>
-          <p className="text-sm text-gray-400">Access your account securely</p>
+    <div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">
+      <Card className="w-full max-w-md border border-border bg-card shadow-lg p-6 rounded-lg">
+        <CardHeader className="flex justify-between items-center">
+          <div className="text-center w-full space-y-2">
+            <h3 className="text-2xl font-semibold">Sign In</h3>
+            <p className="text-sm text-muted-foreground">
+              Access your account securely
+            </p>
+          </div>
         </CardHeader>
 
         <Tabs defaultValue="user" className="w-full">
-          <TabsList className="grid grid-cols-2 bg-gray-700 rounded-lg pb-4">
-            <TabsTrigger
-              value="user"
-              className="px-4 rounded-md text-sm font-medium transition-all"
-            >
-              User Sign-In
-            </TabsTrigger>
+          <TabsList className="grid grid-cols-2 bg-muted rounded-lg pb-4">
             <TabsTrigger
               value="root"
-              className="px-4 rounded-md text-sm font-medium transition-all"
+              className="px-4 rounded-md text-sm font-medium"
             >
               Root Sign-In
             </TabsTrigger>
+            <TabsTrigger
+              value="user"
+              className="px-4 rounded-md text-sm font-medium"
+            >
+              User Sign-In
+            </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="user">
-            <SignInFormContent role="user" />
-          </TabsContent>
           <TabsContent value="root">
             <SignInFormContent role="root" />
+          </TabsContent>
+          <TabsContent value="user">
+            <SignInFormContent role="user" />
           </TabsContent>
         </Tabs>
       </Card>
@@ -59,7 +62,7 @@ function SignInFormContent({ role }: { role: string }) {
     <CardContent>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <Label htmlFor={`email-${role}`} className="text-gray-300">
+          <Label htmlFor={`email-${role}`} className="text-muted-foreground">
             Email
           </Label>
           <Input
@@ -67,12 +70,12 @@ function SignInFormContent({ role }: { role: string }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-gray-700 bg-opacity-50 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
+            className="bg-input border-border text-foreground placeholder-muted-foreground focus:ring-primary"
             required
           />
         </div>
         <div>
-          <Label htmlFor={`password-${role}`} className="text-gray-300">
+          <Label htmlFor={`password-${role}`} className="text-muted-foreground">
             Password
           </Label>
           <Input
@@ -80,13 +83,13 @@ function SignInFormContent({ role }: { role: string }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-gray-700 bg-opacity-50 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
+            className="bg-input border-border text-foreground placeholder-muted-foreground focus:ring-primary"
             required
           />
         </div>
         <Button
           type="submit"
-          className="w-full bg-gray-300 hover:bg-gray-500 transition-all"
+          className="w-full bg-primary hover:bg-primary-dark transition"
         >
           Sign in as {role.charAt(0).toUpperCase() + role.slice(1)}
         </Button>
@@ -97,11 +100,11 @@ function SignInFormContent({ role }: { role: string }) {
       >
         Sign in with Google
       </Button>
-      <p className="text-center text-sm mt-4 text-gray-400">
+      <p className="text-center text-sm mt-4 text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link
           href="/auth/signup"
-          className="font-semibold underline text-gray-300 hover:text-gray-500"
+          className="font-semibold underline hover:text-primary-dark"
         >
           Sign up
         </Link>{" "}
