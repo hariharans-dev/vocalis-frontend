@@ -6,8 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import ApiSignIn from "@/app/api/ApiSignin";
+import { useRouter } from "next/navigation";
+
+function LoadingSpinner() {
+  return (
+    <div className="flex justify-center items-center">
+      <div className="w-6 h-6 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+    </div>
+  );
+}
 
 export default function SignInForm() {
   return (
@@ -50,12 +59,37 @@ export default function SignInForm() {
 }
 
 function SignInFormContent({ role }: { role: string }) {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [response, setResponse] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    setResponse("");
+  }, [email, password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    signIn("credentials", { email, password, callbackUrl: "/", role });
+    setIsLoading(true);
+
+    const response = await ApiSignIn(email, password, role);
+    if (response.data) {
+      setIsRedirecting(true);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } else {
+      setResponse(response["error"]["response"]);
+    }
+    setIsLoading(false);
+  };
+  const handleGoogleSignIn = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    window.location.href = `/api/auth/google?role=${role}`;
   };
 
   return (
@@ -87,15 +121,27 @@ function SignInFormContent({ role }: { role: string }) {
             required
           />
         </div>
+        {response && (
+          <div className="text-sm font-medium text-red-500 text-center">
+            {response}
+          </div>
+        )}
+
         <Button
           type="submit"
           className="w-full bg-primary hover:bg-primary-dark transition"
         >
-          Sign in as {role.charAt(0).toUpperCase() + role.slice(1)}
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : isRedirecting ? (
+            "Redirecting..."
+          ) : (
+            `Sign in as ${role.charAt(0).toUpperCase() + role.slice(1)}`
+          )}
         </Button>
       </form>
       <Button
-        onClick={() => signIn("google", { callbackUrl: "/" })}
+        onClick={handleGoogleSignIn}
         className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white"
       >
         Sign in with Google
@@ -110,6 +156,11 @@ function SignInFormContent({ role }: { role: string }) {
         </Link>{" "}
         for free.
       </p>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <LoadingSpinner />
+        </div>
+      )}
     </CardContent>
   );
 }
