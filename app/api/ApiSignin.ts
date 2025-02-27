@@ -19,12 +19,8 @@ export default async function ApiSignin(
   const frontendSecret = process.env.NEXT_PUBLIC_FRONTEND_SECRET;
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  console.log(frontendSecret, backendUrl);
-
   if (!frontendSecret || !backendUrl) {
-    console.error(
-      "Missing environment variables: FRONTEND_SECRET or BACKEND_URL."
-    );
+   
     return null;
   }
 
