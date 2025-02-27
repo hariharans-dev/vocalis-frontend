@@ -11,7 +11,7 @@ export async function fetchData<T>(
   const { method = "GET", headers = {}, body } = options || {};
 
   try {
-    console.log(path);
+    path;
     const response = await fetch(path, {
       method,
       headers: {

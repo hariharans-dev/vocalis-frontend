@@ -1,4 +1,4 @@
-import { APIRequestOptions, fetchData } from "./FetchData";
+import { APIRequestOptions, fetchData } from "../FetchData";
 import { setToken } from "@/app/api/Session";
 
 interface ApiResponse {
@@ -8,36 +8,29 @@ interface ApiResponse {
   status?: any;
   error?: any;
 }
-export default async function ApiSignin(
+export default async function ApiSignup(
   email: string | null = null,
   password: string | null = null,
-  role: string | null = "root",
   google: boolean = false
 ): Promise<any> {
   if (!email) return null;
+  if (!password) return null;
 
   const frontendSecret = process.env.NEXT_PUBLIC_FRONTEND_SECRET;
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  console.log(frontendSecret, backendUrl);
-
   if (!frontendSecret || !backendUrl) {
-    console.error(
-      "Missing environment variables: FRONTEND_SECRET or BACKEND_URL."
-    );
     return null;
   }
 
-  var path = `${backendUrl}/auth/${role === "root" ? "root" : "user"}`;
-  let requestBody: { email: string | null; password?: string | null } = {
-    email,
-  };
-
+  var path = `${backendUrl}/root`;
   if (google) {
-    path += "/google";
-  } else {
-    requestBody = { ...requestBody, password: password };
+    password = crypto.randomUUID();
   }
+  let requestBody: { email: string; password?: string } = {
+    email,
+    password,
+  };
 
   const options: APIRequestOptions = {
     method: "POST",
