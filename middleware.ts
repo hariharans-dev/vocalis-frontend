@@ -26,7 +26,12 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/dashboard")) {
     if (!sessionActive) {
-      return NextResponse.redirect(new URL("/auth/signin?response=inactive_session", request.url));
+      return NextResponse.redirect(
+        new URL(
+          "/auth/signin?response=inactive_session&redirect=" + request.nextUrl.pathname,
+          request.url
+        )
+      );
     }
     return NextResponse.next();
   }

@@ -25,7 +25,7 @@ export default function SignInForm() {
           </div>
         </CardHeader>
 
-        <Tabs defaultValue="user" className="w-full">
+        <Tabs defaultValue="root" className="w-full">
           <TabsList className="grid grid-cols-2 bg-muted rounded-lg pb-4">
             <TabsTrigger
               value="root"
@@ -56,6 +56,7 @@ function SignInFormContent({ role }: { role: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const param_response = searchParams.get("response");
+  const redirect = searchParams.get("redirect");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,12 +65,12 @@ function SignInFormContent({ role }: { role: string }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    setResponse(""); // Reset response when email or password changes
+    setResponse("");
   }, [email, password]);
 
   useEffect(() => {
     if (param_response !== null) {
-      setResponse(param_response); // Set the response from URL param once
+      setResponse(param_response);
     }
   }, [param_response]);
 
@@ -81,7 +82,11 @@ function SignInFormContent({ role }: { role: string }) {
     if (response.data) {
       setIsRedirecting(true);
       setTimeout(() => {
-        router.push("/dashboard");
+        if (redirect) {
+          router.push(redirect);
+        } else {
+          router.push("/dashboard");
+        }
       }, 1000);
     } else {
       setResponse(response["error"]["response"]);
