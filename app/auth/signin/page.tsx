@@ -7,16 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import ApiSignIn from "@/app/api/ApiSignin";
+import ApiSignIn from "@/app/api/auth/Signin";
 import { useRouter } from "next/navigation";
-
-function LoadingSpinner() {
-  return (
-    <div className="flex justify-center items-center">
-      <div className="w-6 h-6 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-    </div>
-  );
-}
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { useSearchParams } from "next/navigation";
 
 export default function SignInForm() {
   return (
@@ -60,6 +54,8 @@ export default function SignInForm() {
 
 function SignInFormContent({ role }: { role: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const param_response = searchParams.get("response");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -68,8 +64,14 @@ function SignInFormContent({ role }: { role: string }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    setResponse("");
+    setResponse(""); // Reset response when email or password changes
   }, [email, password]);
+
+  useEffect(() => {
+    if (param_response !== null) {
+      setResponse(param_response); // Set the response from URL param once
+    }
+  }, [param_response]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -4,15 +4,36 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LoadingSpinner } from "@/components/loading-spinner";
 import Link from "next/link";
 import { useState } from "react";
+import ApiSignup from "@/app/api/auth/Signup";
+import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [response, setResponse] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    setIsLoading(true);
+
+    const response = await ApiSignup(email, password);
+    if (response.data) {
+      setIsRedirecting(true);
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } else {
+      setResponse(response["error"]["response"]);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -51,12 +72,23 @@ export default function SignUpForm() {
                 className="bg-input border-border text-foreground placeholder-muted-foreground focus:ring-primary"
                 required
               />
+              {response && (
+                <div className={"text-sm font-medium text-center text-red-500"}>
+                  {response}
+                </div>
+              )}
             </div>
             <Button
               type="submit"
               className="w-full bg-primary hover:bg-primary-dark transition"
             >
-              Sign up
+              {isLoading ? (
+                <LoadingSpinner />
+              ) : isRedirecting ? (
+                "Redirecting..."
+              ) : (
+                `Sign up`
+              )}
             </Button>
           </form>
           <Button className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white">
