@@ -79,7 +79,8 @@ function SignInFormContent({ role }: { role: string }) {
     setIsLoading(true);
 
     const response = await ApiSignIn(email, password, role);
-    if (response.data) {
+    console.log(response);
+    if (response?.data) {
       setIsRedirecting(true);
       setTimeout(() => {
         if (redirect) {
@@ -88,8 +89,10 @@ function SignInFormContent({ role }: { role: string }) {
           router.push("/dashboard");
         }
       }, 1000);
-    } else {
+    } else if (response?.error) {
       setResponse(response["error"]["response"]);
+    } else {
+      setResponse("internal server error");
     }
     setIsLoading(false);
   };
@@ -162,6 +165,16 @@ function SignInFormContent({ role }: { role: string }) {
           Sign up
         </Link>{" "}
         for free.
+      </p>
+      <p className="text-center text-sm mt-4 text-muted-foreground">
+        Do you{" "}
+        <Link
+          href={`/auth/forgetpassword?role=${role}`}
+          className="font-semibold underline hover:text-primary-dark"
+        >
+          forget you password
+        </Link>
+        {` ? for your ${role} account`}
       </p>
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

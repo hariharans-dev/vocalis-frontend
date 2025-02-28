@@ -184,7 +184,7 @@ export default function SidebarLayout(props: {
               <SheetTrigger>
                 <Menu />
               </SheetTrigger>
-              <SheetContent side="left" className="w-[240px] p-0">
+              <SheetContent className="w-[240px] p-0 left-0">
                 <SidebarContent
                   onNavigate={() => setSidebarOpen(false)}
                   items={props.items}
