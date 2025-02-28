@@ -20,9 +20,11 @@ export async function fetchData<T>(
       },
       body: method !== "GET" && body ? JSON.stringify(body) : undefined,
     });
+    console.log(response);
 
     return (await response.json()) as T;
   } catch (error) {
+    console.log(error);
     return error as T;
   }
 }

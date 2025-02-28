@@ -4,14 +4,25 @@ import { APIRequestOptions, fetchData } from "./app/api/FetchData";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  let cookie = request.cookies.get("authToken");
+  const cookie = request.cookies.get("authToken");
+  var token = null;
+  if (cookie) {
+    try {
+      const parsedCookie = cookie ? JSON.parse(cookie.value) : null;
+      token = parsedCookie.token;
+    } catch (error) {
+      return NextResponse.redirect(
+        new URL("/auth/signin?response=session_expired", request.url)
+      );
+    }
+  }
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (!backendUrl) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
-  const sessionActive = await isSessionValid(cookie?.value, backendUrl);
+  const sessionActive = await isSessionValid(token, backendUrl);
 
   if (
     pathname === "/" ||
@@ -28,7 +39,8 @@ export async function middleware(request: NextRequest) {
     if (!sessionActive) {
       return NextResponse.redirect(
         new URL(
-          "/auth/signin?response=inactive_session&redirect=" + request.nextUrl.pathname,
+          "/auth/signin?response=session_expired&redirect=" +
+            request.nextUrl.pathname,
           request.url
         )
       );
@@ -53,6 +65,7 @@ async function isSessionValid(
     };
 
     const response = await fetchData<any>(path, options);
+    console.log(response);
     return response.status === "success";
   } catch (error) {
     return false;

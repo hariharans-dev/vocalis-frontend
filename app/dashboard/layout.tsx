@@ -76,8 +76,8 @@ const navigationItems: SidebarItem[] = [
     name: "Settings",
   },
   {
-    name: "Configuration",
-    href: "/configuration",
+    name: "Account",
+    href: "/account",
     icon: Settings2,
     type: "item",
   },

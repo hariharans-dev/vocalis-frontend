@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+"use client";
 
 import {
   Card,
@@ -8,11 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Graph } from "./graph";
-
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Example dashboard app built using the components.",
-};
 
 export default function DashboardPage() {
   return (

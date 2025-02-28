@@ -79,7 +79,8 @@ function SignInFormContent({ role }: { role: string }) {
     setIsLoading(true);
 
     const response = await ApiSignIn(email, password, role);
-    if (response.data) {
+    console.log(response);
+    if (response?.data) {
       setIsRedirecting(true);
       setTimeout(() => {
         if (redirect) {
@@ -88,8 +89,10 @@ function SignInFormContent({ role }: { role: string }) {
           router.push("/dashboard");
         }
       }, 1000);
-    } else {
+    } else if (response?.error) {
       setResponse(response["error"]["response"]);
+    } else {
+      setResponse("internal server error");
     }
     setIsLoading(false);
   };

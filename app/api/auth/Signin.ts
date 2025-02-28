@@ -19,8 +19,9 @@ export default async function ApiSignin(
   const frontendSecret = process.env.NEXT_PUBLIC_FRONTEND_SECRET;
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+  console.log(backendUrl);
+
   if (!frontendSecret || !backendUrl) {
-   
     return null;
   }
 
@@ -45,8 +46,12 @@ export default async function ApiSignin(
 
   try {
     var response = await fetchData<ApiResponse>(path, options);
+    console.log(response);
     if (response !== null && response.data?.token) {
-      setToken("authToken", response["data"]["token"]);
+      setToken(
+        "authToken",
+        JSON.stringify({ token: response["data"]["token"], role: role })
+      );
     }
     return response;
   } catch (error) {
