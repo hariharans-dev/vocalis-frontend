@@ -166,6 +166,16 @@ function SignInFormContent({ role }: { role: string }) {
         </Link>{" "}
         for free.
       </p>
+      <p className="text-center text-sm mt-4 text-muted-foreground">
+        Do you{" "}
+        <Link
+          href={`/auth/forgetpassword?role=${role}`}
+          className="font-semibold underline hover:text-primary-dark"
+        >
+          forget you password
+        </Link>
+        {` ? for your ${role} account`}
+      </p>
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <LoadingSpinner />

@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
     if (!sessionActive) {
       return NextResponse.redirect(
         new URL(
-          "/auth/signin?response=session_expired&redirect=" +
+          "/auth/signin?response=session expired&redirect=" +
             request.nextUrl.pathname,
           request.url
         )
