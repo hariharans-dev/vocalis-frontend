@@ -6,8 +6,6 @@
 .pnp.js
 .yarn/install-state.gz
 
-middleware.ts
-
 note.txt
 
 # testing
