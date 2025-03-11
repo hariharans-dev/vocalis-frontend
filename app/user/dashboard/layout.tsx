@@ -87,7 +87,7 @@ export default function Layout(props: { children: React.ReactNode }) {
   const router = useRouter();
 
   return (
-    <SidebarLayout items={navigationItems} basePath={`/dashboard`}>
+    <SidebarLayout items={navigationItems} basePath={`/user/dashboard`}>
       {props.children}
     </SidebarLayout>
   );

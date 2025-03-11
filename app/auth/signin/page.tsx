@@ -79,20 +79,36 @@ function SignInFormContent({ role }: { role: string }) {
     setIsLoading(true);
 
     const response = await ApiSignIn(email, password, role);
-    console.log(response);
-    if (response?.data) {
-      setIsRedirecting(true);
-      setTimeout(() => {
-        if (redirect) {
-          router.push(redirect);
-        } else {
-          router.push("/dashboard");
-        }
-      }, 1000);
-    } else if (response?.error) {
-      setResponse(response["error"]["response"]);
+    if (role == "root") {
+      if (response?.data) {
+        setIsRedirecting(true);
+        setTimeout(() => {
+          if (redirect) {
+            router.push(redirect);
+          } else {
+            router.push("/root/dashboard");
+          }
+        }, 500);
+      } else if (response?.error) {
+        setResponse(response["error"]["response"]);
+      } else {
+        setResponse("internal server error");
+      }
     } else {
-      setResponse("internal server error");
+      if (response?.data) {
+        setIsRedirecting(true);
+        setTimeout(() => {
+          if (redirect) {
+            router.push(redirect);
+          } else {
+            router.push("/user/dashboard");
+          }
+        }, 500);
+      } else if (response?.error) {
+        setResponse(response["error"]["response"]);
+      } else {
+        setResponse("internal server error");
+      }
     }
     setIsLoading(false);
   };
