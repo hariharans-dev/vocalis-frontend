@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { APIRequestOptions, fetchData } from "./app/api/FetchData";
+import { APIRequestOptions, fetchData } from "./app/_api/FetchData";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
     } catch (error) {
       console.error("Middleware: Error parsing cookie:", error);
       return NextResponse.redirect(
-        new URL("/auth/signin?response=session_expired", request.url)
+        new URL("/auth/signin?response=session expired", request.url)
       );
     }
   }

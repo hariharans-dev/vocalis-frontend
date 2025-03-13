@@ -1,5 +1,5 @@
 import { APIRequestOptions, fetchData } from "../FetchData";
-import { setToken } from "@/app/api/Session";
+import { setToken } from "@/app/_api/Session";
 
 interface ApiResponse {
   data?: {
@@ -8,33 +8,29 @@ interface ApiResponse {
   status?: any;
   error?: any;
 }
-export default async function ApiSignin(
+export default async function ApiSignup(
   email: string | null = null,
   password: string | null = null,
-  role: string | null = "root",
   google: boolean = false
 ): Promise<any> {
   if (!email) return null;
+  if (!password) return null;
 
   const frontendSecret = process.env.NEXT_PUBLIC_FRONTEND_SECRET;
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  console.log(backendUrl);
 
   if (!frontendSecret || !backendUrl) {
     return null;
   }
 
-  var path = `${backendUrl}/auth/${role === "root" ? "root" : "user"}`;
-  let requestBody: { email: string | null; password?: string | null } = {
-    email,
-  };
-
+  var path = `${backendUrl}/root`;
   if (google) {
-    path += "/google";
-  } else {
-    requestBody = { ...requestBody, password: password };
+    password = crypto.randomUUID();
   }
+  let requestBody: { email: string; password?: string } = {
+    email,
+    password,
+  };
 
   const options: APIRequestOptions = {
     method: "POST",
@@ -46,12 +42,8 @@ export default async function ApiSignin(
 
   try {
     var response = await fetchData<ApiResponse>(path, options);
-    console.log(response);
     if (response !== null && response.data?.token) {
-      setToken(
-        "authToken",
-        JSON.stringify({ token: response["data"]["token"], role: role })
-      );
+      setToken("authToken", response["data"]["token"]);
     }
     return response;
   } catch (error) {

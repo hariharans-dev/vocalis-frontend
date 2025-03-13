@@ -31,7 +31,6 @@ export default function DashboardPage() {
   };
 
   const submitChanges = () => {
-    console.log("Updated Account Details:", accountDetails);
     setIsEditing(false);
   };
 
@@ -62,7 +61,6 @@ export default function DashboardPage() {
       return;
     }
 
-    console.log("Password updated:", password.newPassword);
     alert("Password updated successfully!");
     setPassword({ newPassword: "", confirmPassword: "" });
   };

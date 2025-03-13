@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import Link from "next/link";
 import { useState } from "react";
-import ApiSignup from "@/app/api/auth/Signup";
+import ApiSignup from "@/app/_api/auth/Signup";
 import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
