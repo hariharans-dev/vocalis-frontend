@@ -1,7 +1,7 @@
 export default function Page() {
   return (
     <div>
-      <h1>revenue</h1>
+      <h1>voice feedback</h1>
     </div>
   );
 }

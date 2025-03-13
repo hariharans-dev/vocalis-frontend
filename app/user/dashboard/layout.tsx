@@ -2,15 +2,11 @@
 
 import SidebarLayout, { SidebarItem } from "@/components/sidebar-layout";
 import {
-  BadgePercent,
-  BarChart4,
-  Columns3,
   Globe,
-  Locate,
   Settings2,
-  ShoppingBag,
-  ShoppingCart,
   Users,
+  Mic,
+  Calendar,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -23,57 +19,49 @@ const navigationItems: SidebarItem[] = [
   },
   {
     type: "label",
-    name: "Management",
+    name: "Event",
   },
   {
-    name: "Products",
-    href: "/products",
-    icon: ShoppingBag,
+    name: "Event",
+    href: "/event",
+    icon: Calendar,
     type: "item",
   },
   {
-    name: "People",
-    href: "/people",
+    type: "label",
+    name: "Live Event",
+  },
+  {
+    name: "Voice Feedback",
+    href: "/voicefeedback",
+    icon: Mic,
+    type: "item",
+  },
+  {
+    name: "Audience Feedback",
+    href: "/audiencefeedback",
     icon: Users,
     type: "item",
   },
   {
-    name: "Segments",
-    href: "/segments",
-    icon: Columns3,
+    type: "label",
+    name: "Feedback Report",
+  },
+  {
+    name: "Voice Report",
+    href: "/voicereport",
+    icon: Mic,
     type: "item",
   },
   {
-    name: "Regions",
-    href: "/regions",
-    icon: Locate,
+    name: "Audience Report",
+    href: "/audiencereport",
+    icon: Users,
     type: "item",
   },
   {
     type: "label",
-    name: "Monetization",
-  },
-  {
-    name: "Revenue",
-    href: "/revenue",
-    icon: BarChart4,
-    type: "item",
-  },
-  {
-    name: "Orders",
-    href: "/orders",
-    icon: ShoppingCart,
-    type: "item",
-  },
-  {
-    name: "Discounts",
-    href: "/discounts",
-    icon: BadgePercent,
-    type: "item",
-  },
-  {
-    type: "label",
-    name: "Settings",
+    name: "Account",
   },
   {
     name: "Account",
@@ -85,9 +73,18 @@ const navigationItems: SidebarItem[] = [
 
 export default function Layout(props: { children: React.ReactNode }) {
   const router = useRouter();
+  const sidebarTopContent = (
+    <div className="flex-grow justify-start text-sm font-medium text-zinc-500 dark:text-zinc-400 px-2 py-1">
+      No Event Selected
+    </div>
+  );
 
   return (
-    <SidebarLayout items={navigationItems} basePath={`/user/dashboard`}>
+    <SidebarLayout
+      items={navigationItems}
+      sidebarTop={sidebarTopContent}
+      basePath={`/user/dashboard`}
+    >
       {props.children}
     </SidebarLayout>
   );
