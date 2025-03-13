@@ -1,14 +1,12 @@
 "use client";
 
-import SidebarLayout, { SidebarItem } from "@/components/sidebar-layout";
 import {
-  Globe,
-  Settings2,
-  Users,
-  Mic,
-  Calendar,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
+  SidebarLayout,
+  SidebarItem,
+  SidebarTopContent,
+} from "@/components/sidebar-layout";
+import { Globe, Settings2, Users, Mic, Calendar } from "lucide-react";
+
 
 const navigationItems: SidebarItem[] = [
   {
@@ -72,17 +70,10 @@ const navigationItems: SidebarItem[] = [
 ];
 
 export default function Layout(props: { children: React.ReactNode }) {
-  const router = useRouter();
-  const sidebarTopContent = (
-    <div className="flex-grow justify-start text-sm font-medium text-zinc-500 dark:text-zinc-400 px-2 py-1">
-      No Event Selected
-    </div>
-  );
-
   return (
     <SidebarLayout
       items={navigationItems}
-      sidebarTop={sidebarTopContent}
+      sidebarTop={<SidebarTopContent />}
       basePath={`/user/dashboard`}
     >
       {props.children}
