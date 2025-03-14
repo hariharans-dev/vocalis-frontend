@@ -18,7 +18,7 @@ import { buttonVariants } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { ColorModeSwitcher } from "./color-mode-switcher";
-import { getEventCookie } from "@/app/_functions/_current_event";
+import { getCookie } from "@/app/_functions/cookie";
 
 function useSegment(basePath: string) {
   const path = usePathname();
@@ -215,7 +215,7 @@ export function SidebarLayout(props: {
 export function SidebarTopContent() {
   const [event, setEvent] = useState("No Event Selected");
   async function getEvent() {
-    const eventCookie = await getEventCookie();
+    const eventCookie = await getCookie("event");
     if (eventCookie && eventCookie.event) {
       setEvent(eventCookie.event);
     }
@@ -226,7 +226,7 @@ export function SidebarTopContent() {
 
   return (
     <div className="flex-grow justify-start text-sm font-medium text-zinc-500 dark:text-zinc-400 px-2 py-1">
-      {event}
+      Event: {event}
     </div>
   );
 }

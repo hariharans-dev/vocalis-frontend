@@ -22,7 +22,7 @@ import {
   VoiceFeedbackReportCount,
 } from "@/app/_api/user/account/EventData";
 
-export default function DashboardPage() {
+export default function AccountPage() {
   const router = useRouter();
 
   const [password, setPassword] = useState({
