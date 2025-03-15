@@ -38,8 +38,9 @@ export default async function ApiSignin(
     method: "POST",
     headers: {
       Authorization: `Bearer ${frontendSecret}`,
+      "Content-Type": "application/json",
     },
-    body: requestBody,
+    body: JSON.stringify(requestBody),
   };
 
   try {

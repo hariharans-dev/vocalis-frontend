@@ -1,28 +1,23 @@
 export interface APIRequestOptions {
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method: "GET" | "POST" | "PUT" | "DELETE";
   headers?: Record<string, string>;
-  body?: any;
+  body?: FormData | string;
 }
 
 export async function fetchData<T>(
-  path: string,
-  options?: APIRequestOptions
-): Promise<T | null> {
-  const { method = "GET", headers = {}, body } = options || {};
-
+  url: string,
+  options: APIRequestOptions
+): Promise<T> {
   try {
-    path;
-    const response = await fetch(path, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        ...headers,
-      },
-      body: method !== "GET" && body ? JSON.stringify(body) : undefined,
+    const response = await fetch(url, {
+      method: options.method,
+      headers: options.headers,
+      body: options.body,
     });
-
-    return (await response.json()) as T;
+    const data: T = await response.json();
+    return data;
   } catch (error) {
-    return error as T;
+    console.error("Fetch Error:", error);
+    throw error;
   }
 }

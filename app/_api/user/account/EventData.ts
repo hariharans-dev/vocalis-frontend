@@ -17,8 +17,9 @@ export async function EventDataCount() {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
-    body: { count: "true" },
+    body: JSON.stringify({ count: "true" }),
   };
   try {
     var response = await fetchData<ApiResponse>(path, options);
@@ -38,8 +39,9 @@ export async function VoiceFeedbackCount() {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
-    body: { count: "true" },
+    body: JSON.stringify({ count: "true" }),
   };
   try {
     var response = await fetchData<ApiResponse>(path, options);
@@ -59,8 +61,9 @@ export async function VoiceFeedbackReportCount() {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
-    body: { count: "true" },
+    body: JSON.stringify({ count: "true" }),
   };
   try {
     var response = await fetchData<ApiResponse>(path, options);

@@ -24,6 +24,7 @@ export async function GetUserData() {
     method: "GET",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
   };
   try {
@@ -44,8 +45,9 @@ export async function UpdateUserData(data: Object) {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
-    body: data,
+    body: JSON.stringify({ data }),
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);

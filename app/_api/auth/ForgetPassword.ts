@@ -1,3 +1,4 @@
+import { json } from "stream/consumers";
 import { APIRequestOptions, fetchData } from "../FetchData";
 
 interface ApiResponse {
@@ -27,7 +28,7 @@ export default async function ApiForgetPassword(
   }
 
   let path = `${backendUrl}/${role}/forgetpassword`;
-  let requestBody;
+  let requestBody: Object;
   let options: APIRequestOptions;
 
   if (resetToken) {
@@ -39,8 +40,9 @@ export default async function ApiForgetPassword(
       method: "PUT",
       headers: {
         Authorization: `Bearer ${resetToken}`,
+        "Content-Type": "application/json",
       },
-      body: requestBody,
+      body: JSON.stringify(requestBody),
     };
   } else if (email) {
     requestBody = {
@@ -51,8 +53,9 @@ export default async function ApiForgetPassword(
       method: "POST",
       headers: {
         Authorization: `Bearer ${frontendSecret}`,
+        "Content-Type": "application/json",
       },
-      body: requestBody,
+      body: JSON.stringify(requestBody),
     };
   } else {
     return null;

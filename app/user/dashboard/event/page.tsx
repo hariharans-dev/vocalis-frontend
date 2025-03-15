@@ -151,7 +151,6 @@ export default function EventPage() {
       currentEventData.event_detail &&
       name in currentEventData.event_detail
     ) {
-      // Handle nested event_detail properties
       setCurrentEventData({
         ...currentEventData,
         event_detail: {
@@ -160,7 +159,6 @@ export default function EventPage() {
         },
       });
     } else {
-      // Handle top-level properties
       setCurrentEventData({
         ...currentEventData,
         [name]: value,

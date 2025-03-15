@@ -17,6 +17,7 @@ export async function getEventRole() {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
   };
   try {
@@ -37,8 +38,9 @@ export async function getEventData(event_name: string) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
-    body: { event_name },
+    body: JSON.stringify({ event_name }), 
   };
   try {
     var response = await fetchData<ApiResponse>(path, options);
@@ -58,8 +60,9 @@ export async function updateEventData(event_data: any) {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
     },
-    body: event_data,
+    body: JSON.stringify({ event_data }),
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);
