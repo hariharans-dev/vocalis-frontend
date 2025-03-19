@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import {
   Card,
   CardContent,
@@ -9,10 +11,20 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
-export default function DashboardPage() {
+import { Logout } from "@/app/_api/auth/Logout";
+import { GetUserData, UpdateUserData } from "@/app/_api/user/account/UserData";
+import {
+  EventDataCount,
+  VoiceFeedbackCount,
+  VoiceFeedbackReportCount,
+} from "@/app/_api/user/account/EventData";
+
+export default function AccountPage() {
+  const router = useRouter();
+
   const [password, setPassword] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -23,15 +35,91 @@ export default function DashboardPage() {
     phone: "",
     email: "",
   });
+  const [eventData, setEventData] = useState({
+    total_count: 0,
+    admin_count: 0,
+    reporter_count: 0,
+  });
+  const [voiceCount, setVoiceCount] = useState(0);
+  const [voiceReportCount, setVoiceReportCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState<React.ReactNode>(null);
+  const [userDataError, setUserDataError] = useState("");
 
-  const startEditing = () => {
+  const userData = async () => {
+    const response = await GetUserData();
+
+    if (response && "data" in response && response.data) {
+      setAccountDetails({
+        ...accountDetails,
+        name: response.data?.name || accountDetails.name,
+        phone: response.data?.phone || accountDetails.phone,
+        email: response.data?.email || accountDetails.email,
+      });
+    }
+  };
+
+  const userEventData = async () => {
+    var response = await EventDataCount();
+
+    if (response?.status == "success" && response?.data) {
+      setEventData({
+        ...eventData,
+        total_count: Number(response.data.total_count),
+        admin_count: Number(response.data.admin_count),
+        reporter_count: Number(response.data.reporter_count),
+      });
+    }
+  };
+
+  const voiceFeedback = async () => {
+    var response = await VoiceFeedbackCount();
+
+    if (response?.status == "success" && response?.data) {
+      setVoiceCount(response.data.count);
+    }
+  };
+
+  const voiceFeedbackReport = async () => {
+    var response = await VoiceFeedbackReportCount();
+
+    if (response?.status == "success" && response?.data) {
+      setVoiceReportCount(response.data.count);
+    }
+  };
+
+  useEffect(() => {
+    userData();
+    userEventData();
+    voiceFeedback();
+    voiceFeedbackReport();
+  }, []);
+
+  const startAccountEditing = () => {
     setIsEditing(true);
   };
 
-  const submitChanges = () => {
-    console.log("Updated Account Details:", accountDetails);
+  const updateAccount = async () => {
+    const feilds = Object.keys(accountDetails);
+    const placeholder = ["", "", ""];
+    var data: Record<string, string> = {};
+
+    feilds.forEach((element) => {
+      if (
+        !placeholder.includes(
+          accountDetails[element as keyof typeof accountDetails]
+        )
+      ) {
+        data[element] = accountDetails[element as keyof typeof accountDetails];
+      }
+    });
+    const response = await UpdateUserData(data);
+    if (response?.status == "error") {
+      setUserDataError(response.error?.response ?? "error in updating");
+    } else {
+      setUserDataError("update successfull");
+      router.refresh();
+    }
     setIsEditing(false);
   };
 
@@ -52,57 +140,66 @@ export default function DashboardPage() {
       e.target.name === "confirmPassword" &&
       e.target.value === password.newPassword
     ) {
-      setError("");
+      setPasswordError("");
     }
   };
 
-  const updatePassword = () => {
+  const updatePassword = async () => {
     if (password.newPassword !== password.confirmPassword) {
-      setError("Passwords do not match!");
+      setPasswordError(
+        <ul>
+          <li>Passwords do not match!</li>
+        </ul>
+      );
       return;
     }
 
-    console.log("Password updated:", password.newPassword);
-    alert("Password updated successfully!");
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRegex.test(password.newPassword)) {
+      setPasswordError(
+        <ul>
+          <li>At least one lowercase letter</li>
+          <li>At least one uppercase letter</li>
+          <li>At least one digit</li>
+          <li>At least one special character: @$!%*?&</li>
+        </ul>
+      );
+      return;
+    }
+
+    const response = await UpdateUserData({ password: password.newPassword });
+
+    if (response?.status == "success") {
+      setPasswordError(
+        <ul>
+          <li>{response.data?.response}</li>
+        </ul>
+      );
+    }
+
     setPassword({ newPassword: "", confirmPassword: "" });
   };
+
+  const logout = async () => {
+    const response = await Logout();
+    if (response && response["status"] == "success") {
+      router.push("/auth/signin?response=logout successfull");
+    }
+  };
+
+  const closeAccount = () => {};
+
   return (
     <>
       <div className="flex-col">
         <div className="flex-1 space-y-4 p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
-          </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Number of Events
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
-                <p className="text-xs text-muted-foreground">
-                  +20.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Subscriptions
+                  Type of Account
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -120,16 +217,46 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+2350</div>
+                <div className="text-2xl font-bold">User</div>
                 <p className="text-xs text-muted-foreground">
-                  +180.1% from last month
+                  Access event functionalities
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Number of Requests
+                  Number of Roles
+                </CardTitle>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  className="h-4 w-4 text-muted-foreground"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                  <path d="M12 6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+                  <path d="M16 13h-1.5v2.5h-2V13H12v-2h2.5V8.5h2V11H16v2z" />
+                </svg>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {eventData.total_count}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Number of admins: {eventData.admin_count} and reporters:{" "}
+                  {eventData.reporter_count}
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Number of Voice Feedbacks
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -146,15 +273,17 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+12,234</div>
+                <div className="text-2xl font-bold">{voiceCount}</div>
                 <p className="text-xs text-muted-foreground">
-                  +19% from last month
+                  voice feedback gathered for audience
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Reports</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Voice FeedBack Report Generations
+                </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -169,9 +298,9 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+573</div>
+                <div className="text-2xl font-bold">{voiceReportCount}</div>
                 <p className="text-xs text-muted-foreground">
-                  +201 since last hour
+                  number of reports generated for voice feedback
                 </p>
               </CardContent>
             </Card>
@@ -184,7 +313,6 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="space-y-3">
                   {" "}
-                  {/* Increased spacing between input fields */}
                   <div className="flex items-center gap-2">
                     <Label htmlFor="account-name" className="w-24">
                       Name
@@ -195,7 +323,7 @@ export default function DashboardPage() {
                       name="name"
                       value={accountDetails.name}
                       onChange={handleAccountChange}
-                      placeholder="Name"
+                      placeholder={accountDetails.name}
                       disabled={!isEditing}
                       className="flex-1"
                     />
@@ -210,7 +338,7 @@ export default function DashboardPage() {
                       name="phone"
                       value={accountDetails.phone}
                       onChange={handleAccountChange}
-                      placeholder="Phone"
+                      placeholder={accountDetails.phone}
                       disabled={!isEditing}
                       className="flex-1"
                     />
@@ -225,17 +353,21 @@ export default function DashboardPage() {
                       name="email"
                       value={accountDetails.email}
                       onChange={handleAccountChange}
-                      placeholder="Email"
+                      placeholder={accountDetails.email}
                       disabled={!isEditing}
                       className="flex-1"
                     />
                   </div>
-                  {/* Added margin-top to create distance */}
+                  <div className="flex items-center gap-2">
+                    {userDataError && (
+                      <p className="text-red-500 text-sm">{userDataError}</p>
+                    )}
+                  </div>
                   <div className="mt-6">
                     {!isEditing ? (
-                      <Button onClick={startEditing}>Update</Button>
+                      <Button onClick={startAccountEditing}>Update</Button>
                     ) : (
-                      <Button onClick={submitChanges}>Submit</Button>
+                      <Button onClick={updateAccount}>Submit</Button>
                     )}
                   </div>
                 </div>
@@ -266,8 +398,9 @@ export default function DashboardPage() {
                     placeholder="Confirm Password"
                   />
 
-                  {/* Show error message if passwords don't match */}
-                  {error && <p className="text-red-500 text-sm">{error}</p>}
+                  {passwordError && (
+                    <div style={{ color: "red" }}>{passwordError}</div>
+                  )}
 
                   <Button
                     onClick={updatePassword}
@@ -279,6 +412,22 @@ export default function DashboardPage() {
                     Update Password
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+            <Card className="col-span-3 p-4">
+              <CardHeader>
+                <CardTitle>Account Session</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={logout}>Logout</Button>
+              </CardContent>
+            </Card>
+            <Card className="col-span-3 p-4">
+              <CardHeader>
+                <CardTitle>Account Closing</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button className="bg-red-600 text-white">Close Account</Button>
               </CardContent>
             </Card>
           </div>

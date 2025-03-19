@@ -1,5 +1,5 @@
 import { APIRequestOptions, fetchData } from "../FetchData";
-import { setToken } from "@/app/api/Session";
+import { setToken } from "@/app/_api/Session";
 
 interface ApiResponse {
   data?: {
@@ -18,8 +18,6 @@ export default async function ApiSignin(
 
   const frontendSecret = process.env.NEXT_PUBLIC_FRONTEND_SECRET;
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  console.log(backendUrl);
 
   if (!frontendSecret || !backendUrl) {
     return null;
@@ -40,13 +38,13 @@ export default async function ApiSignin(
     method: "POST",
     headers: {
       Authorization: `Bearer ${frontendSecret}`,
+      "Content-Type": "application/json",
     },
-    body: requestBody,
+    body: JSON.stringify(requestBody),
   };
 
   try {
     var response = await fetchData<ApiResponse>(path, options);
-    console.log(response);
     if (response !== null && response.data?.token) {
       setToken(
         "authToken",

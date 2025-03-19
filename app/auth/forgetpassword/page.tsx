@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import ApiForgetPassword from "@/app/api/auth/ForgetPassword";
+import ApiForgetPassword from "@/app/_api/auth/ForgetPassword";
 
 export default function SignUpForm() {
   const router = useRouter();

@@ -1,5 +1,5 @@
 import { APIRequestOptions, fetchData } from "../FetchData";
-import { setToken } from "@/app/api/Session";
+import { setToken } from "@/app/_api/Session";
 
 interface ApiResponse {
   data?: {
@@ -36,8 +36,9 @@ export default async function ApiSignup(
     method: "POST",
     headers: {
       Authorization: `Bearer ${frontendSecret}`,
+      "Content-Type": "application/json",
     },
-    body: requestBody,
+    body: JSON.stringify(requestBody),
   };
 
   try {

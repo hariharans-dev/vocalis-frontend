@@ -1,70 +1,79 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { APIRequestOptions, fetchData } from "./app/api/FetchData";
+import { NextRequest } from "next/server";
+import { APIRequestOptions, fetchData } from "./app/_api/FetchData";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const cookie = request.cookies.get("authToken");
   var token = null;
-
-  console.log(`Middleware: Pathname: ${pathname}`);
+  var role = null;
 
   if (cookie) {
     try {
       const parsedCookie = cookie ? JSON.parse(cookie.value) : null;
       token = parsedCookie.token;
-      console.log(`Middleware: Token from cookie: ${token}`);
+      role = parsedCookie.role;
     } catch (error) {
       console.error("Middleware: Error parsing cookie:", error);
       return NextResponse.redirect(
-        new URL("/auth/signin?response=session_expired", request.url)
+        new URL("/auth/signin?response=session expired", request.url)
       );
     }
   }
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (!backendUrl) {
-    console.error("Middleware: Backend URL not found");
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
-  const sessionActive = await isSessionValid(token, backendUrl);
-  console.log(`Middleware: Session Active: ${sessionActive}`);
+  const sessionActive = await isSessionValid(token, backendUrl, role);
 
   if (
     pathname === "/" ||
     pathname.startsWith("/auth/signin") ||
     pathname.startsWith("/auth/signup")
   ) {
-    if (sessionActive) {
-      console.log("Middleware: Redirecting to /dashboard");
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (sessionActive && role) {
+      if (role == "root") {
+        return NextResponse.redirect(new URL("/root/dashboard", request.url));
+      } else {
+        return NextResponse.redirect(new URL("/user/dashboard", request.url));
+      }
     }
-    console.log("Middleware: Allowing access to auth pages");
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/root/dashboard")) {
     if (!sessionActive) {
-      console.log("Middleware: Redirecting to /auth/signin");
       return NextResponse.redirect(
         new URL("/auth/signin?response=session expired", request.url)
       );
     }
-    console.log("Middleware: Allowing access to /dashboard");
+    if (role != "root")
+      return NextResponse.redirect(new URL("/user/dashboard", request.url));
     return NextResponse.next();
   }
 
-  console.log("Middleware: Allowing access to other pages");
+  if (pathname.startsWith("/user/dashboard")) {
+    if (!sessionActive) {
+      return NextResponse.redirect(
+        new URL("/auth/signin?response=session expired", request.url)
+      );
+    }
+    if (role != "user")
+      return NextResponse.redirect(new URL("/root/dashboard", request.url));
+    return NextResponse.next();
+  }
+
   return NextResponse.next();
 }
 
 async function isSessionValid(
   token: string | undefined,
-  backendUrl: string
+  backendUrl: string,
+  role: string
 ): Promise<boolean> {
   if (!token) {
-    console.log("isSessionValid: No token found");
     return false;
   }
 
@@ -76,8 +85,7 @@ async function isSessionValid(
     };
 
     const response = await fetchData<any>(path, options);
-    console.log("isSessionValid: Response:", response);
-    return response.status === "success";
+    return response["status"] === "success" && response["data"]["role"] == role;
   } catch (error) {
     console.error("isSessionValid: Error:", error);
     return false;

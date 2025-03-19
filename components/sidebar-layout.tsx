@@ -5,7 +5,7 @@ import { LucideIcon, Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,6 +18,7 @@ import { buttonVariants } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { ColorModeSwitcher } from "./color-mode-switcher";
+import { getCookie } from "@/app/_functions/cookie";
 
 function useSegment(basePath: string) {
   const path = usePathname();
@@ -147,7 +148,7 @@ function HeaderBreadcrumb(props: {
   );
 }
 
-export default function SidebarLayout(props: {
+export function SidebarLayout(props: {
   children?: React.ReactNode;
   baseBreadcrumb?: HeaderBreadcrumbItem[];
   items: SidebarItem[];
@@ -207,6 +208,25 @@ export default function SidebarLayout(props: {
         </div>
         <div className="flex-grow">{props.children}</div>
       </div>
+    </div>
+  );
+}
+
+export function SidebarTopContent() {
+  const [event, setEvent] = useState("No Event Selected");
+  async function getEvent() {
+    const eventCookie = await getCookie("event");
+    if (eventCookie && eventCookie.event) {
+      setEvent(eventCookie.event);
+    }
+  }
+  useEffect(() => {
+    getEvent();
+  }, []);
+
+  return (
+    <div className="flex-grow justify-start text-sm font-medium text-zinc-500 dark:text-zinc-400 px-2 py-1">
+      Event: {event}
     </div>
   );
 }
