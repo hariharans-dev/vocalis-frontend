@@ -14,12 +14,13 @@ export async function middleware(request: NextRequest) {
       token = parsedCookie.token;
       role = parsedCookie.role;
     } catch (error) {
-      console.error("Middleware: Error parsing cookie:", error);
       return NextResponse.redirect(
         new URL("/auth/signin?response=session expired", request.url)
       );
     }
   }
+
+  console.log(cookie);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (!backendUrl) {
@@ -96,12 +97,11 @@ async function isSessionValid(
 
     const response = await fetchData<any>(path, options);
 
-    if (response["status"] === "success" && response["data"]["role"] == role) {
+    if (response["status"] === "success") {
       return "valid";
     }
     return "invalid";
   } catch (error) {
-    console.error("isSessionValid: Error:", error);
     return "backend_error";
   }
 }
