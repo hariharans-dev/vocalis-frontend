@@ -79,6 +79,7 @@ function SignInFormContent({ role }: { role: string }) {
     setIsLoading(true);
 
     const response = await ApiSignIn(email, password, role);
+
     if (role == "root") {
       if (response?.data) {
         setIsRedirecting(true);
@@ -96,7 +97,9 @@ function SignInFormContent({ role }: { role: string }) {
       }
     } else {
       if (response?.data) {
+        console.log("signin success");
         setIsRedirecting(true);
+        console.log("user dashboard rerouting");
         setTimeout(() => {
           if (redirect) {
             router.push(redirect);
