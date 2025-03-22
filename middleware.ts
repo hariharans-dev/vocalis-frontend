@@ -14,19 +14,30 @@ export async function middleware(request: NextRequest) {
       token = parsedCookie.token;
       role = parsedCookie.role;
     } catch (error) {
-      console.error("Middleware: Error parsing cookie:", error);
       return NextResponse.redirect(
         new URL("/auth/signin?response=session expired", request.url)
       );
     }
   }
 
+  console.log(cookie);
+
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (!backendUrl) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
+    return NextResponse.redirect(
+      new URL("/auth/signin?response=backend unreachable", request.url)
+    );
   }
 
-  const sessionActive = await isSessionValid(token, backendUrl, role);
+  const sessionCheck = await isSessionValid(token, backendUrl, role);
+
+  if (sessionCheck === "backend_error") {
+    return NextResponse.redirect(
+      new URL("/auth/signin?response=backend unreachable", request.url)
+    );
+  }
+
+  const sessionActive = sessionCheck === "valid";
 
   if (
     pathname === "/" ||
@@ -72,9 +83,9 @@ async function isSessionValid(
   token: string | undefined,
   backendUrl: string,
   role: string
-): Promise<boolean> {
+): Promise<"valid" | "invalid" | "backend_error"> {
   if (!token) {
-    return false;
+    return "invalid";
   }
 
   try {
@@ -85,10 +96,13 @@ async function isSessionValid(
     };
 
     const response = await fetchData<any>(path, options);
-    return response["status"] === "success" && response["data"]["role"] == role;
+
+    if (response["status"] === "success") {
+      return "valid";
+    }
+    return "invalid";
   } catch (error) {
-    console.error("isSessionValid: Error:", error);
-    return false;
+    return "backend_error";
   }
 }
 

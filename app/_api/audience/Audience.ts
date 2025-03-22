@@ -2,8 +2,8 @@ import { getToken } from "@/app/_api/Session";
 import { APIRequestOptions, fetchData } from "../FetchData";
 
 interface ApiResponse {
-  data?: any;
-  status?: string;
+  data?: { response: string };
+  status: string;
   error?: {
     response: string;
   };
