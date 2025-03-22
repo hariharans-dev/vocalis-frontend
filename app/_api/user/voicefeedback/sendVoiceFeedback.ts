@@ -13,12 +13,10 @@ export async function sendVoiceFeedback(data: FormData) {
   try {
     const authTokenString = getToken("authToken");
     if (!authTokenString) {
-      console.error("authToken not found");
       return { status: "error", error: { response: "authToken missing" } };
     }
     const authToken = JSON.parse(authTokenString);
     if (!authToken || !authToken.token) {
-      console.error("Invalid authToken format");
       return { status: "error", error: { response: "Invalid authToken" } };
     }
 

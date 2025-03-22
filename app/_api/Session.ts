@@ -10,7 +10,6 @@ export const setToken = (name: string, token: any | undefined) => {
   const expireTimeInHoursNumber = parseInt(expireTimeInHours, 10);
 
   if (isNaN(expireTimeInHoursNumber)) {
-    console.error("NEXT_PUBLIC_SESSION_EXPIRE is not a valid number.");
     return;
   }
 

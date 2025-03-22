@@ -72,7 +72,6 @@ function RecordingPage() {
         setIsRecording(true);
         setIsPaused(false);
       } catch (error) {
-        console.error("Error accessing microphone:", error);
       }
     } else {
       stopRecording();

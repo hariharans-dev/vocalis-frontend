@@ -56,7 +56,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchCookie = async () => {
       const cookie = await getCookie("event");
-      console.log("User Role:", cookie?.role);
       setRole(cookie?.role ?? null); // Default to null if no role is found
     };
     fetchCookie();

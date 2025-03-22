@@ -47,10 +47,11 @@ export async function UpdateUserData(data: Object) {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ data }),
+    body: JSON.stringify(data),
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);
+
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };

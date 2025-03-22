@@ -19,7 +19,6 @@ export default async function ApiForgetPassword(
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!frontendSecret || !backendUrl) {
-    console.error("Environment variables not set.");
     return null;
   }
 
