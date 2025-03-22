@@ -48,6 +48,7 @@ export default function AudienceFeedback() {
   >(null);
 
   const [showVoiceData, setShowVoiceData] = useState(false);
+  const [showVoiceReport, setShowVoiceReport] = useState(true);
   const [voiceFeedbackResponseData, setVoiceFeedbackResponseData] =
     useState("");
 
@@ -73,7 +74,6 @@ export default function AudienceFeedback() {
     const cookie = await getCookie("event");
     if (cookie && "event" in cookie) {
       const response = await createVoiceReport(String(cookie.event));
-      console.log(response);
       if (response?.data?.response) {
         setVoiceFeedbackResponseData(String(response.data.response));
       }
@@ -84,7 +84,6 @@ export default function AudienceFeedback() {
     const cookie = await getCookie("event");
     if (cookie?.event) {
       const response = await getVoiceReport(String(cookie.event));
-      console.log(response);
 
       if (
         response?.status === "success" &&
@@ -103,190 +102,161 @@ export default function AudienceFeedback() {
   return (
     <div className="flex flex-col w-full">
       <div className="flex-1 space-y-4 p-4 sm:p-8 pt-6">
-        <div className="text-lg font-bold flex items-center space-x-6 my-3">
-          <span>Create Voice Feedback Report</span>
-          <Button onClick={createVoiceReportFunc}>Create</Button>
+        {voiceFeedbackResponseData && (
+          <p className="text-red-500 text-sm">{voiceFeedbackResponseData}</p>
+        )}
+
+        <div className="text-lg font-bold flex flex-wrap justify-center sm:justify-start items-center gap-2 sm:gap-3 my-3 text-center">
+          <span className="w-full sm:w-auto">Create Voice Feedback Report</span>
+
+          <Button
+            className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
+            onClick={createVoiceReportFunc}
+          >
+            Create
+          </Button>
         </div>
 
-        {voiceFeedbackResponseData && (
-          <div>
-            <p className="text-red-500 text-sm">{voiceFeedbackResponseData}</p>
-          </div>
-        )}
-        <div>
-          <div className="text-lg font-bold flex items-center space-x-6 my-3">
-            <span>Voice Feedback Reports</span>
-            <Button
-              onClick={() => {
-                getVoiceReportFunc();
-              }}
-            >
-              Refresh
-            </Button>
-          </div>
-          {Array.isArray(voiceReportData) && voiceReportData.length > 0 ? (
-            <div className="grid gap-6">
+        <div className="text-lg font-bold flex flex-wrap justify-center sm:justify-start items-center gap-2 sm:gap-3 my-3 sm:my-4 text-center">
+          <span className="w-full sm:w-auto">Voice Feedback</span>
+
+          <Button
+            className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
+            onClick={() => {
+              setShowVoiceData(false);
+              setShowVoiceReport(!showVoiceReport);
+            }}
+          >
+            {showVoiceReport ? "Hide" : "Show"} Voice Feedback Reports
+          </Button>
+
+          <Button
+            className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
+            onClick={getVoiceReportFunc}
+          >
+            Refresh
+          </Button>
+
+          <Button
+            className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
+            onClick={() => {
+              getAudienceDataFunc();
+              setShowVoiceData(!showVoiceData);
+              setShowVoiceReport(false);
+            }}
+          >
+            {showVoiceData ? "Hide" : "Show"} Voice Feedbacks
+          </Button>
+        </div>
+
+        {showVoiceReport &&
+          (Array.isArray(voiceReportData) && voiceReportData.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {voiceReportData.map((report: VoiceReportData, index: number) => (
-                <div
-                  key={index}
-                  className="border rounded-lg p-4 shadow-sm bg-gray-200 dark:bg-gray-700"
-                >
-                  <h2 className="text-lg font-bold mb-4">Report {index + 1}</h2>
-
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    {/* General Opinion */}
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <span className="font-bold text-lg">
-                          General Opinion
-                        </span>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          {report.general_opinion?.opinion ??
-                            "Generating report..."}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Total Feedbacks:{" "}
-                          {report.general_opinion?.total_feedbacks ??
-                            "Generating report..."}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Positive:{" "}
-                          {report.general_opinion?.positive_percentage ??
-                            "Generating report..."}
-                          %
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Negative:{" "}
-                          {report.general_opinion?.negative_percentage ??
-                            "Generating report..."}
-                          %
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Positive Summary */}
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <span className="font-bold text-lg">
-                          Positive Summary
-                        </span>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          {report.summary?.positive_summary ??
-                            "Generating report..."}
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Negative Summary */}
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <span className="font-bold text-lg">
-                          Negative Summary
-                        </span>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          {report.summary?.negative_summary ??
-                            "Generating report..."}
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    {/* Overall Summary */}
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <span className="font-bold text-lg">
-                          Overall Summary
-                        </span>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                          {report.overall_summary ?? "Generating report..."}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
+                <Card key={index} className="p-4 shadow-md">
+                  <CardHeader>
+                    <h3 className="text-lg font-bold">Report {index + 1}</h3>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    <p>
+                      <strong>General Opinion:</strong>{" "}
+                      {report.general_opinion?.opinion ?? "Generating..."}
+                    </p>
+                    <p>
+                      <strong>Total Feedbacks:</strong>{" "}
+                      {report.general_opinion?.total_feedbacks ??
+                        "Generating..."}
+                    </p>
+                    <p>
+                      <strong>Positive:</strong>{" "}
+                      {report.general_opinion?.positive_percentage ??
+                        "Generating..."}
+                      %
+                    </p>
+                    <p>
+                      <strong>Negative:</strong>{" "}
+                      {report.general_opinion?.negative_percentage ??
+                        "Generating..."}
+                      %
+                    </p>
+                    <p>
+                      <strong>Positive Summary:</strong>{" "}
+                      {report.summary?.positive_summary ?? "Generating..."}
+                    </p>
+                    <p>
+                      <strong>Negative Summary:</strong>{" "}
+                      {report.summary?.negative_summary ?? "Generating..."}
+                    </p>
+                    <p>
+                      <strong>Overall Summary:</strong>{" "}
+                      {report.overall_summary ?? "Generating..."}
+                    </p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           ) : (
             <p className="text-center text-sm text-gray-500">
               No voice reports available.
             </p>
-          )}
-        </div>
-        <Button
-          onClick={() => {
-            getAudienceDataFunc();
-            setShowVoiceData(!showVoiceData);
-          }}
-        >
-          Show Voice Feedbacks
-        </Button>
+          ))}
+
+        {/* Voice Feedback Section */}
         {showVoiceData && (
           <div>
-            {audienceData.length != 0 ? (
-              <div className="text-lg font-bold flex items-center space-x-1 my-3">
-                <span>Voice Feedbacks </span>
-              </div>
+            {audienceData.length === 0 ? (
+              <p className="text-center text-sm text-gray-500">
+                No Voice Feedbacks Recorded
+              </p>
             ) : (
-              <div className="text-lg font-bold flex items-center space-x-1 my-3">
-                <span>No Voice Feedbacks Recorded</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {audienceData.map((item: any) => (
+                  <Card key={item.id} className="p-4 shadow-md">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        className="h-4 w-4 text-muted-foreground"
+                      >
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-xs text-muted-foreground">
+                      {item.audience.name && (
+                        <p>
+                          <strong>Name:</strong> {item.audience.name}
+                        </p>
+                      )}
+                      {item.audience.email && (
+                        <p>
+                          <strong>Email:</strong> {item.audience.email}
+                        </p>
+                      )}
+                      {item.audience.phone && (
+                        <p>
+                          <strong>Phone:</strong> {item.audience.phone}
+                        </p>
+                      )}
+                      {item.audience.address && (
+                        <p>
+                          <strong>Address:</strong> {item.audience.address}
+                        </p>
+                      )}
+                      <p>
+                        <strong>Feedback:</strong> {item.data}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {audienceData.map((item: any) => (
-                <Card key={item.id}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className="h-4 w-4 text-muted-foreground"
-                    >
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                  </CardHeader>
-                  <CardContent>
-                    {item.audience.name && (
-                      <p className="text-xs text-muted-foreground">
-                        Name: {item.audience.name}
-                      </p>
-                    )}
-                    {item.audience.email && (
-                      <p className="text-xs text-muted-foreground">
-                        Email: {item.audience.email}
-                      </p>
-                    )}
-                    {item.audience.phone && (
-                      <p className="text-xs text-muted-foreground">
-                        Phone: {item.audience.phone}
-                      </p>
-                    )}
-                    {item.audience.address && (
-                      <p className="text-xs text-muted-foreground">
-                        Phone: {item.audience.address}
-                      </p>
-                    )}
-                    {
-                      <p className="text-xs text-muted-foreground">
-                        Feedback: {item.data}
-                      </p>
-                    }
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
           </div>
         )}
       </div>

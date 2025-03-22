@@ -97,9 +97,7 @@ function SignInFormContent({ role }: { role: string }) {
       }
     } else {
       if (response?.data) {
-        console.log("signin success");
         setIsRedirecting(true);
-        console.log("user dashboard rerouting");
         setTimeout(() => {
           if (redirect) {
             router.push(redirect);
