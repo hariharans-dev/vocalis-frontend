@@ -24,6 +24,7 @@ export async function Logout() {
   try {
     const response = await fetchData<ApiResponse>(path, options);
     removeToken("authToken");
+    removeToken("event");
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };

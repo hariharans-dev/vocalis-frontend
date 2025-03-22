@@ -305,14 +305,13 @@ export default function AccountPage() {
               </CardContent>
             </Card>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4 p-4">
+          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="sm:col-span-1 md:col-span-4 p-4">
               <CardHeader>
                 <CardTitle>Account Details</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {" "}
                   <div className="flex items-center gap-2">
                     <Label htmlFor="account-name" className="w-24">
                       Name
@@ -374,7 +373,7 @@ export default function AccountPage() {
               </CardContent>
             </Card>
 
-            <Card className="col-span-3 p-4">
+            <Card className="sm:col-span-1 md:col-span-3 p-4">
               <CardHeader>
                 <CardTitle>Change Password</CardTitle>
                 <CardDescription>
@@ -397,11 +396,9 @@ export default function AccountPage() {
                     onChange={handlePasswordChange}
                     placeholder="Confirm Password"
                   />
-
                   {passwordError && (
-                    <div style={{ color: "red" }}>{passwordError}</div>
+                    <div className="text-red-500">{passwordError}</div>
                   )}
-
                   <Button
                     onClick={updatePassword}
                     className="mt-2"
@@ -414,7 +411,8 @@ export default function AccountPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="col-span-3 p-4">
+
+            <Card className="sm:col-span-1 md:col-span-3 p-4">
               <CardHeader>
                 <CardTitle>Account Session</CardTitle>
               </CardHeader>
@@ -422,7 +420,8 @@ export default function AccountPage() {
                 <Button onClick={logout}>Logout</Button>
               </CardContent>
             </Card>
-            <Card className="col-span-3 p-4">
+
+            <Card className="sm:col-span-1 md:col-span-3 p-4">
               <CardHeader>
                 <CardTitle>Account Closing</CardTitle>
               </CardHeader>

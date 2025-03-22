@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createCookie, getCookie } from "@/app/_functions/cookie";
+import { getCookie } from "@/app/_functions/cookie";
 
 import {
   createEndpoint,
   getAudienceData,
   getEndpoint,
 } from "@/app/_api/user/audiencefeedback/Endpoint";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function AudienceFeedback() {
@@ -74,37 +74,34 @@ export default function AudienceFeedback() {
     <div className="flex flex-col w-full">
       <div className="flex-1 space-y-4 p-4 sm:p-8 pt-6">
         {endpoint && endpoint !== "null" ? (
-          <div className="text-lg font-bold flex items-center space-x-1">
-            <span>Event Endpoint: </span>
-            <span className="font-normal">
-              <a
+          <div className="text-lg font-bold flex flex-wrap items-center justify-center sm:justify-start text-center sm:text-left gap-2">
+            <span>Event Endpoint:</span>
+            <span className="text-sm font-light break-words w-full sm:w-auto text-center sm:text-left">
+              <Link
                 href={`${frontendUrl}/audience?endpoint=${endpoint}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 break-all hover:underline ml-2"
+                className="text-blue-600 hover:underline inline-block"
               >
                 {`${frontendUrl}/audience?endpoint=${endpoint}`}
-              </a>
+              </Link>
             </span>
           </div>
         ) : (
-          <div className="text-lg font-bold flex items-center space-x-1">
-            <span>Event Endpoint: </span>
+          <div className="text-lg font-bold flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <span>Event Endpoint:</span>
             <span className="font-normal">Not Created</span>
           </div>
         )}
 
         {!endpoint || endpoint === "null" ? (
-          <div>
+          <div className="flex justify-center sm:justify-start">
             <button
               onClick={createEndpointfunc}
-              className="w-fit mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full sm:w-fit mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               Create Endpoint
             </button>
           </div>
         ) : null}
-
         {audienceData.length != 0 ? (
           <div className="text-lg font-bold flex items-center space-x-1">
             <span>Audience Feedbacks </span>

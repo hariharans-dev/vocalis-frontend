@@ -224,7 +224,7 @@ export default function AudienceReport() {
       )}
 
       <Button
-        className="w-30 sm:w-40 text-sm sm:text-base"
+        className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
         onClick={() => setShowVoiceData(!showVoiceData)}
       >
         {showVoiceData ? "Hide" : "Show"} Reports
@@ -283,7 +283,7 @@ export default function AudienceReport() {
             </div>
           ) : (
             <p className="text-center text-sm text-gray-500">
-              No voice reports available.
+              No Audience reports available.
             </p>
           )}
         </div>

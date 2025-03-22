@@ -200,9 +200,8 @@ export default function EventPage() {
                         type="text"
                         name="endpoint"
                         value={currentEventData.endpoint || ""}
-                        onChange={handleEventChange}
                         placeholder={currentEventData.endpoint || ""}
-                        disabled={!isEditing}
+                        disabled={true}
                         className="flex-1"
                       />
                     </div>
