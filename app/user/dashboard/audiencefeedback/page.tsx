@@ -32,7 +32,6 @@ export default function AudienceFeedback() {
     const cookie = await getCookie("event");
     if (cookie && "event" in cookie) {
       const response = await getAudienceData(String(cookie["event"]));
-      console.log(response.data);
       if (response?.data && Array.isArray(response.data)) {
         const formattedData: AudienceData[] = response.data.map(
           (element: any, index: number) => ({

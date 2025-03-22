@@ -92,7 +92,6 @@ export default function EventPage() {
     if (cookie && "event" in cookie && "role" in cookie) {
       setRole(String(cookie.role));
       var response = await getEventData(String(cookie.event));
-      console.log(response?.data);
       if (response?.data) {
         setCurrentEventData({
           ...currentEventData,
@@ -106,10 +105,6 @@ export default function EventPage() {
     EventRoleData();
     EventData();
   }, []);
-
-  const handleItemSelected = (selectedItem: { id: string; label: string }) => {
-    console.log("Selected item:", selectedItem);
-  };
 
   const handleEventSelected = (item: any) => {
     createCookie("event", { event: item.label, role: item.role });
@@ -316,7 +311,7 @@ export default function EventPage() {
             items={searchItems}
             query={searchQuery}
             onQueryChange={setSearchQuery}
-            onSelect={handleItemSelected}
+            onSelect={() => {}}
             filteredItems={filteredItems}
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

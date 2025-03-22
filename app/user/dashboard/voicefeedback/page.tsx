@@ -129,7 +129,6 @@ function RecordingPage() {
     if (cookie?.event) formData.append("event_name", String(cookie.event));
 
     const response = await sendVoiceFeedback(formData);
-    console.log(response);
     handleDiscard();
   };
 

@@ -68,7 +68,6 @@ export async function getAudienceData(event_name: String) {
     },
     body: JSON.stringify({ event_name }),
   };
-  console.log(options);
   try {
     const response = await fetchData<ApiResponse>(path, options);
     return response;

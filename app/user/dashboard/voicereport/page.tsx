@@ -73,7 +73,6 @@ export default function AudienceFeedback() {
     const cookie = await getCookie("event");
     if (cookie && "event" in cookie) {
       const response = await createVoiceReport(String(cookie.event));
-      console.log(response);
       if (response?.data?.response) {
         setVoiceFeedbackResponseData(String(response.data.response));
       }
@@ -84,7 +83,6 @@ export default function AudienceFeedback() {
     const cookie = await getCookie("event");
     if (cookie?.event) {
       const response = await getVoiceReport(String(cookie.event));
-      console.log(response);
 
       if (
         response?.status === "success" &&

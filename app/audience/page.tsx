@@ -45,10 +45,8 @@ export default function AudienceFeedback() {
       setUserDataError("feedback missing !!");
       return;
     }
-    console.log(audienceData);
     var data: any = audienceData;
     data.event_endpoint = endpoint;
-    console.log(data);
     const response = await createAudienceData(data);
     if (response.status == "success") {
       setUserDataError(String(response.data?.response));
