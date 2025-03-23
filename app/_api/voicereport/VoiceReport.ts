@@ -1,37 +1,19 @@
-import { APIRequestOptions, fetchData } from "../../FetchData";
+import { APIRequestOptions, fetchData } from "../FetchData";
 import { getToken } from "@/app/_api/Session";
 
 interface ApiResponse {
-  data?: any;
+  data?: {
+    map(arg0: (element: any, index: number) => any): unknown;
+    forEach(arg0: (element: any) => void): unknown;
+    event_endpoint?: String | null;
+    response?: String | null;
+  };
   status?: any;
   error?: any;
 }
 
-export async function EventDataCount() {
+export async function getVoiceData(data: Object) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  var authToken = JSON.parse(getToken("authToken") ?? "null");
-
-  const path = `${backendUrl}/role/list`;
-  const options: APIRequestOptions = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${authToken["token"]}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ count: "true" }),
-  };
-  try {
-    var response = await fetchData<ApiResponse>(path, options);
-    return response;
-  } catch (error) {
-    return { status: "error", error: { response: "internal server error" } };
-  }
-}
-
-export async function VoiceFeedbackCount() {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
   const path = `${backendUrl}/reporter/data/get`;
@@ -41,19 +23,39 @@ export async function VoiceFeedbackCount() {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ count: "true" }),
+    body: JSON.stringify(data),
   };
   try {
-    var response = await fetchData<ApiResponse>(path, options);
+    const response = await fetchData<ApiResponse>(path, options);
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };
   }
 }
 
-export async function VoiceFeedbackReportCount() {
+export async function createVoiceReport(event_name: String) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  var authToken = JSON.parse(getToken("authToken") ?? "null");
 
+  const path = `${backendUrl}/reporter/report`;
+  const options: APIRequestOptions = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ event_name }),
+  };
+  try {
+    const response = await fetchData<ApiResponse>(path, options);
+    return response;
+  } catch (error) {
+    return { status: "error", error: { response: "internal server error" } };
+  }
+}
+
+export async function getVoiceReport(event_name: String) {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
   const path = `${backendUrl}/reporter/report/get`;
@@ -63,10 +65,10 @@ export async function VoiceFeedbackReportCount() {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ count: "true" }),
+    body: JSON.stringify({ event_name }),
   };
   try {
-    var response = await fetchData<ApiResponse>(path, options);
+    const response = await fetchData<ApiResponse>(path, options);
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };

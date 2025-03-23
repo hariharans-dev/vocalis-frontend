@@ -1,4 +1,4 @@
-import { APIRequestOptions, fetchData } from "../../FetchData";
+import { APIRequestOptions, fetchData } from "../FetchData";
 import { getToken } from "@/app/_api/Session";
 
 interface ApiResponse {

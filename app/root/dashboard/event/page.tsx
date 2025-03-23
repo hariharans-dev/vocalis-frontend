@@ -5,18 +5,15 @@ import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { SearchBar } from "@/components/search-bar";
 import { getEventData, getEventRole } from "@/app/_api/event/EventData";
+import { createEvent } from "@/app/_api/event/root/Event";
 import { createCookie, getCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-// import {} from "@/app/_api/user/account/EventData";
 
 export default function EventPage() {
   interface SearchItem {
@@ -36,6 +33,11 @@ export default function EventPage() {
     };
   }
 
+  interface NewEvent {
+    event_name: string;
+    description: string;
+  }
+
   const [searchItems, setSearchItems] = useState<SearchItem[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,6 +53,11 @@ export default function EventPage() {
       date: "",
     },
   });
+  const [newEvent, setNewEvent] = useState<NewEvent>({
+    event_name: "",
+    description: "",
+  });
+  const [newEventError, setNewEventError] = useState("");
   const [role, setRole] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [userDataError, setUserDataError] = useState("");
@@ -64,25 +71,15 @@ export default function EventPage() {
 
   const EventRoleData = async () => {
     const response = await getEventRole();
-    if (response && response.data) {
-      var index = 0;
-      response.data.forEach((element: any) => {
-        interface MyData {
-          id: string;
-          label: string;
-          role: string;
-        }
-
-        let data: MyData = {
-          id: "",
-          label: "",
-          role: "",
-        };
-        data.id = "" + index;
-        data.label = element.event.name;
-        data.role = element.role_list.name;
-        setSearchItems([...searchItems, data]);
-      });
+    if (response?.data) {
+      const items: SearchItem[] = response.data.map(
+        (element: any, index: number) => ({
+          id: `${index}`,
+          label: element.event.name,
+          role: element.role_list.name,
+        })
+      );
+      setSearchItems(items);
     }
   };
 
@@ -105,6 +102,22 @@ export default function EventPage() {
     EventRoleData();
     EventData();
   }, []);
+
+  const createEventFunc = async () => {
+    if (newEvent.event_name == "") {
+      setNewEventError("event name missing");
+    } else {
+      const response = await createEvent(newEvent);
+      if (response.status == "success") {
+        setNewEventError(String(response.data?.response));
+        createCookie("event", { event: newEvent.event_name, role: "root" });
+        EventRoleData();
+        EventData();
+      } else {
+        setNewEventError(String(response.error?.response));
+      }
+    }
+  };
 
   const handleEventSelected = (item: any) => {
     createCookie("event", { event: item.label, role: item.role });
@@ -165,6 +178,67 @@ export default function EventPage() {
     <>
       <div className="flex-col">
         <div className="flex-1 space-y-4 p-8 pt-6">
+          <div>
+            <div className="flex items-center justify-between space-y-2 mb-3">
+              <h2 className="text-2xl font-bold tracking-tight">
+                Create Event
+              </h2>
+            </div>
+            <Card className="col-span-4 p-4">
+              <CardContent>
+                <div className="space-y-3">
+                  {" "}
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="new-event-name" className="w-24">
+                      Event Name
+                    </Label>
+                    <Input
+                      id="new-event-name"
+                      type="text"
+                      name="event_name"
+                      value={newEvent.event_name}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setNewEvent({
+                          ...newEvent,
+                          [e.target.name]: e.target.value,
+                        });
+                      }}
+                      placeholder={newEvent.event_name}
+                      className="flex-1"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="new-event-description" className="w-24">
+                      Event Description
+                    </Label>
+                    <Input
+                      id="new-event-description"
+                      type="text"
+                      name="description"
+                      value={newEvent.description}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setNewEvent({
+                          ...newEvent,
+                          [e.target.name]: e.target.value,
+                        });
+                      }}
+                      placeholder={newEvent.description}
+                      className="flex-1"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {newEventError && (
+                      <p className="text-red-500 text-sm">{newEventError}</p>
+                    )}
+                  </div>
+                  <div className="mt-6">
+                    <Button onClick={createEventFunc}>Create</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {currentEventData.name != "" && (
             <div>
               <div className="flex items-center justify-between space-y-2 mb-3">
@@ -289,7 +363,7 @@ export default function EventPage() {
                         <p className="text-red-500 text-sm">{userDataError}</p>
                       )}
                     </div>
-                    {role == "admin" && (
+                    {role == "root" && (
                       <div className="mt-6">
                         {!isEditing ? (
                           <Button onClick={startEventEditing}>Update</Button>
@@ -310,7 +384,7 @@ export default function EventPage() {
             items={searchItems}
             query={searchQuery}
             onQueryChange={setSearchQuery}
-            onSelect={() => {}}
+            onSelect={handleEventSelected}
             filteredItems={filteredItems}
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -1,56 +1,41 @@
-import { APIRequestOptions, fetchData } from "../../FetchData";
 import { getToken } from "@/app/_api/Session";
+import { APIRequestOptions, fetchData } from "../FetchData";
 
 interface ApiResponse {
-  data?: any;
-  status?: any;
-  error?: any;
+  data?: {
+    email: string | null;
+    phone: string | null;
+    name: string | null;
+    response: string | null;
+  };
+  status?: string;
+  error?: {
+    response: string;
+  };
 }
 
-export async function getEventRole() {
+export async function GetUserData() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
-  const path = `${backendUrl}/role/list`;
+  const path = `${backendUrl}/user`;
   const options: APIRequestOptions = {
-    method: "POST",
+    method: "GET",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
   };
   try {
-    var response = await fetchData<ApiResponse>(path, options);
+    const response = await fetchData<ApiResponse>(path, options);
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };
   }
 }
 
-export async function getEventData(event_name: string) {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  var authToken = JSON.parse(getToken("authToken") ?? "null");
-
-  const path = `${backendUrl}/event/get`;
-  const options: APIRequestOptions = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${authToken["token"]}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ event_name }), 
-  };
-  try {
-    var response = await fetchData<ApiResponse>(path, options);
-    return response;
-  } catch (error) {
-    return { status: "error", error: { response: "internal server error" } };
-  }
-}
-
-export async function updateEventData(event_data: any) {
+export async function UpdateUserData(data: Object) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
@@ -62,10 +47,11 @@ export async function updateEventData(event_data: any) {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ event_data }),
+    body: JSON.stringify(data),
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);
+
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };

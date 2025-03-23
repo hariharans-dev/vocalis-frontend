@@ -1,5 +1,5 @@
-import { APIRequestOptions, fetchData } from "../../FetchData";
-import { getToken } from "../../Session";
+import { APIRequestOptions, fetchData } from "../FetchData";
+import { getToken } from "../Session";
 
 interface ApiResponse {
   data?: any;
