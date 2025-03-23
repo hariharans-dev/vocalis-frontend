@@ -13,6 +13,7 @@ const navigationItems: SidebarItem[] = [
   { name: "Overview", href: "/", icon: Globe, type: "item" },
   { type: "label", name: "Event" },
   { name: "Event", href: "/event", icon: Calendar, type: "item" },
+  { name: "Roles", href: "/role", icon: Users, type: "item" },
   { type: "label", name: "Live Event" },
   { name: "Voice Feedback", href: "/voicefeedback", icon: Mic, type: "item" },
   {
