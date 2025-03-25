@@ -10,7 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SearchBar } from "@/components/search-bar";
-import { getEventData, getEventRole } from "@/app/_api/event/EventData";
+import {
+  getEventData,
+  getEventRole,
+  updateEventData,
+} from "@/app/_api/event/EventData";
 import { createCookie, getCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -116,26 +120,25 @@ export default function EventPage() {
   };
 
   const updateEvent = async () => {
-    // const feilds = Object.keys(accountDetails);
-    // const placeholder = ["", "", ""];
-    // var data: Record<string, string> = {};
+    let data: any = structuredClone(currentEventData);
+    data["event_name"] = data.name;
+    delete data.endpoint;
+    delete data.name;
 
-    // feilds.forEach((element) => {
-    //   if (
-    //     !placeholder.includes(
-    //       accountDetails[element as keyof typeof accountDetails]
-    //     )
-    //   ) {
-    //     data[element] = accountDetails[element as keyof typeof accountDetails];
-    //   }
-    // });
-    // const response = await UpdateUserData(data);
-    // if (response?.status == "error") {
-    //   setUserDataError(response.error?.response ?? "error in updating");
-    // } else {
-    //   setUserDataError("update successfull");
-    //   router.refresh();
-    // }
+    data = {
+      event_name: data.name,
+      ...data,
+      ...data.event_detail,
+    };
+    delete data.event_detail;
+
+    const response = await updateEventData(data);
+    if (response?.status == "error") {
+      setUserDataError(response.error?.response ?? "error in updating");
+    } else {
+      setUserDataError("update successfull");
+      await EventData();
+    }
     setIsEditing(false);
   };
 
@@ -212,7 +215,7 @@ export default function EventPage() {
                       <Input
                         id="event-location"
                         type="text"
-                        name="event_detail.location"
+                        name="location"
                         value={currentEventData.event_detail?.location || ""}
                         onChange={handleEventChange}
                         placeholder={
@@ -229,8 +232,12 @@ export default function EventPage() {
                       <Input
                         id="event-date"
                         type="datetime-local"
-                        name="event_detail.date"
-                        value={currentEventData.event_detail?.date || ""}
+                        name="date"
+                        value={
+                          currentEventData.event_detail?.date
+                            ? currentEventData.event_detail.date.slice(0, 16)
+                            : ""
+                        }
                         onChange={handleEventChange}
                         placeholder={currentEventData.event_detail?.date || ""}
                         disabled={!isEditing}
@@ -244,7 +251,7 @@ export default function EventPage() {
                       <Input
                         id="event-description"
                         type="text"
-                        name="event_detail.description"
+                        name="description"
                         value={currentEventData.event_detail?.description || ""}
                         onChange={handleEventChange}
                         placeholder={
@@ -261,7 +268,7 @@ export default function EventPage() {
                       <Input
                         id="event-email"
                         type="text"
-                        name="event_detail.email"
+                        name="email"
                         value={currentEventData.event_detail?.email || ""}
                         onChange={handleEventChange}
                         placeholder={currentEventData.event_detail?.email || ""}
@@ -276,7 +283,7 @@ export default function EventPage() {
                       <Input
                         id="event-phone"
                         type="text"
-                        name="event_detail.phone"
+                        name="phone"
                         value={currentEventData.event_detail?.phone || ""}
                         onChange={handleEventChange}
                         placeholder={currentEventData.event_detail?.phone || ""}

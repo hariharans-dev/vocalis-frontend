@@ -55,14 +55,14 @@ export async function updateEventData(event_data: any) {
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
-  const path = `${backendUrl}/user`;
+  const path = `${backendUrl}/event`;
   const options: APIRequestOptions = {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ event_data }),
+    body: JSON.stringify(event_data),
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);
