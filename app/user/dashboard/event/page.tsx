@@ -69,24 +69,33 @@ export default function EventPage() {
   const EventRoleData = async () => {
     const response = await getEventRole();
     if (response && response.data) {
-      var index = 0;
-      response.data.forEach((element: any) => {
-        interface MyData {
-          id: string;
-          label: string;
-          role: string;
-        }
+      const eventRoleMap: Record<
+        string,
+        { id: string; label: string; roles: string[] }
+      > = {};
 
-        let data: MyData = {
-          id: "",
-          label: "",
-          role: "",
-        };
-        data.id = "" + index;
-        data.label = element.event.name;
-        data.role = element.role_list.name;
-        setSearchItems([...searchItems, data]);
+      response.data.forEach((element: any, index: number) => {
+        const eventName = element.event.name;
+        const roleName = element.role_list.name;
+
+        if (!eventRoleMap[eventName]) {
+          eventRoleMap[eventName] = {
+            id: "" + index, // Unique ID for the event
+            label: eventName,
+            roles: [roleName], // Start with first role
+          };
+        } else {
+          eventRoleMap[eventName].roles.push(roleName);
+        }
       });
+
+      // Convert object to array and update state
+      setSearchItems(
+        Object.values(eventRoleMap).map((item) => ({
+          ...item,
+          role: item.roles.join(", "), // Join multiple roles with a comma
+        }))
+      );
     }
   };
 
@@ -111,7 +120,12 @@ export default function EventPage() {
   }, []);
 
   const handleEventSelected = (item: any) => {
-    createCookie("event", { event: item.label, role: item.role });
+    if (item.role == "admin, reporter") {
+      createCookie("event", { event: item.label, role: "admin" });
+    } else {
+      createCookie("event", { event: item.label, role: item.role });
+    }
+
     window.location.reload();
   };
 
@@ -322,10 +336,7 @@ export default function EventPage() {
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {filteredItems.map((item: any) => (
-              <Card
-                key={item.id}
-                onClick={handleEventSelected.bind(null, item)}
-              >
+              <Card key={item.id} onClick={() => handleEventSelected(item)}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -345,7 +356,7 @@ export default function EventPage() {
                 <CardContent>
                   <div className="text-2xl font-bold">{item.label}</div>
                   <p className="text-xs text-muted-foreground">
-                    Role assigned: {item.role}
+                    Roles assigned: {item.role}
                   </p>
                 </CardContent>
               </Card>

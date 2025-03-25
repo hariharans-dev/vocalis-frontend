@@ -28,7 +28,7 @@ export default function SignUpForm() {
     if (response.data) {
       setIsRedirecting(true);
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/root/dashboard");
       }, 1000);
     } else {
       setResponse(response["error"]["response"]);

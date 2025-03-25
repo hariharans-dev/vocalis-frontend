@@ -1,4 +1,4 @@
-import { getToken } from "@/app/_api/Session";
+import { getToken, removeToken } from "@/app/_api/Session";
 import { APIRequestOptions, fetchData } from "../FetchData";
 
 interface ApiResponse {
@@ -52,6 +52,29 @@ export async function UpdateUserData(data: Object) {
   try {
     const response = await fetchData<ApiResponse>(path, options);
 
+    return response;
+  } catch (error) {
+    return { status: "error", error: { response: "internal server error" } };
+  }
+}
+
+export async function CloseUserAccount() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  var authToken = JSON.parse(getToken("authToken") ?? "null");
+
+  const path = `${backendUrl}/user`;
+  const options: APIRequestOptions = {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
+    },
+  };
+  try {
+    const response = await fetchData<ApiResponse>(path, options);
+    removeToken("authToken");
+    removeToken("event");
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };

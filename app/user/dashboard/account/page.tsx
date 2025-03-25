@@ -15,16 +15,20 @@ import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
 import { Logout } from "@/app/_api/auth/Logout";
-import { GetUserData, UpdateUserData } from "@/app/_api/account/UserData";
+import {
+  CloseUserAccount,
+  GetUserData,
+  UpdateUserData,
+} from "@/app/_api/account/UserData";
 import {
   EventDataCount,
   VoiceFeedbackCount,
   VoiceFeedbackReportCount,
 } from "@/app/_api/account/EventData";
+import { getToken } from "@/app/_api/Session";
 
 export default function AccountPage() {
   const router = useRouter();
-
   const [password, setPassword] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -189,7 +193,12 @@ export default function AccountPage() {
     }
   };
 
-  const closeAccount = () => {};
+  const closeAccount = async () => {
+    const response = await CloseUserAccount();
+    if (response && response["status"] == "success") {
+      router.push("/auth/signin?response=user account closed");
+    }
+  };
 
   return (
     <>
@@ -426,7 +435,12 @@ export default function AccountPage() {
                 <CardTitle>Account Closing</CardTitle>
               </CardHeader>
               <CardContent>
-                <Button className="bg-red-600 text-white">Close Account</Button>
+                <Button
+                  onClick={closeAccount}
+                  className="bg-red-600 text-white"
+                >
+                  Close Account
+                </Button>
               </CardContent>
             </Card>
           </div>
