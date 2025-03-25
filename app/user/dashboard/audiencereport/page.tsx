@@ -22,6 +22,7 @@ import {
   createAudienceReport,
   getAudienceReport,
 } from "@/app/_api/audiencereport/Report";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function AudienceReport() {
   interface GeneratedAudienceReportData {
@@ -223,15 +224,18 @@ export default function AudienceReport() {
         </div>
       )}
 
-      <Button
-        className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
-        onClick={() => setShowVoiceData(!showVoiceData)}
-      >
-        {showVoiceData ? "Hide" : "Show"} Reports
-      </Button>
+      <div className="flex justify-start">
+        <Button
+          className="px-4 py-2 mt-2 sm:mt-0 lg:px-3 lg:py-1 lg:text-sm"
+          onClick={() => setShowVoiceData(!showVoiceData)}
+        >
+          {showVoiceData ? "Hide Reports" : "Show Reports"}
+        </Button>
+      </div>
+
       {showVoiceData && (
         <div className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between">
+          <div className="flex flex-wrap items-center gap-x-3">
             <h2 className="text-lg sm:text-xl font-bold">
               All Audience Feedback Reports
             </h2>
