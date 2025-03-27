@@ -29,3 +29,26 @@ export async function createEvent(data: any) {
     return { status: "error", error: { response: "internal server error" } };
   }
 }
+
+export async function deleteEvent(event_name: string) {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  var authToken = JSON.parse(getToken("authToken") ?? "null");
+
+  const path = `${backendUrl}/event`;
+  const options: APIRequestOptions = {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ event_name }),
+  };
+
+  try {
+    var response = await fetchData<ApiResponse>(path, options);
+    return response;
+  } catch (error) {
+    return { status: "error", error: { response: "internal server error" } };
+  }
+}

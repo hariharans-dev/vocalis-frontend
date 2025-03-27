@@ -4,12 +4,23 @@ import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SearchBar } from "@/components/search-bar";
-import { getEventData, getEventRole, updateEventData } from "@/app/_api/event/EventData";
-import { createEvent } from "@/app/_api/event/root/Event";
-import { createCookie, getCookie } from "@/app/_functions/cookie";
+import {
+  getEventData,
+  getEventRole,
+  updateEventData,
+} from "@/app/_api/event/EventData";
+import { createEvent, deleteEvent } from "@/app/_api/event/root/Event";
+import { createCookie, getCookie, removeCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 export default function EventPage() {
   interface SearchItem {
@@ -57,7 +68,7 @@ export default function EventPage() {
   const [role, setRole] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [userDataError, setUserDataError] = useState("");
-  const [isSelectEvent, setSelectEvent] = useState(false);
+  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
   const filteredItems = searchQuery
     ? searchItems.filter((item) =>
@@ -107,8 +118,7 @@ export default function EventPage() {
       if (response.status == "success") {
         setNewEventError(String(response.data?.response));
         createCookie("event", { event: newEvent.event_name, role: "root" });
-        EventRoleData();
-        EventData();
+        window.location.reload();
       } else {
         setNewEventError(String(response.error?.response));
       }
@@ -167,6 +177,21 @@ export default function EventPage() {
         [name]: value,
       });
     }
+  };
+
+  const handleDeleteEvent = async (event: string) => {
+    const currentEvent = await getCookie("event");
+    console.log(event);
+    console.log(currentEvent);
+    if (
+      currentEvent &&
+      "event" in currentEvent &&
+      currentEvent.event == event
+    ) {
+      removeCookie("event");
+    }
+    await deleteEvent(event);
+    window.location.reload();
   };
 
   return (
@@ -387,11 +412,8 @@ export default function EventPage() {
             filteredItems={filteredItems}
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {filteredItems.map((item: any) => (
-              <Card
-                key={item.id}
-                onClick={handleEventSelected.bind(null, item)}
-              >
+            {filteredItems.map((item: any, index: number) => (
+              <Card key={item.id}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -407,6 +429,36 @@ export default function EventPage() {
                     <circle cx="9" cy="7" r="4" />
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="cursor-pointer"
+                        onClick={(e) => e.stopPropagation()} // Prevents triggering Card click
+                      >
+                        <MoreHorizontal />
+                      </button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents accidental card selection
+                          handleDeleteEvent(item.label);
+                        }}
+                      >
+                        Delete Event
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents accidental card selection
+                          handleEventSelected(item);
+                        }}
+                      >
+                        Select Event
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{item.label}</div>
