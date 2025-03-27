@@ -71,3 +71,26 @@ export async function getEventUsersRoles(event_name: string) {
     return { status: "error", error: { response: "internal server error" } };
   }
 }
+
+export async function deleteRole(data: any) {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  var authToken = JSON.parse(getToken("authToken") ?? "null");
+
+  const path = `${backendUrl}/role`;
+  const options: APIRequestOptions = {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${authToken["token"]}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  };
+
+  try {
+    var response = await fetchData<ApiResponse>(path, options);
+    return response;
+  } catch (error) {
+    return { status: "error", error: { response: "internal server error" } };
+  }
+}

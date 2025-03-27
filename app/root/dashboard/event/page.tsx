@@ -445,6 +445,7 @@ export default function EventPage() {
                           e.stopPropagation(); // Prevents accidental card selection
                           handleDeleteEvent(item.label);
                         }}
+                        className="w-full text-left text-sm p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-800"
                       >
                         Delete Event
                       </DropdownMenuItem>

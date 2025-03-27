@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-import { getEventUsersRoles } from "@/app/_api/role/root/Role";
+import { deleteRole, getEventUsersRoles } from "@/app/_api/role/root/Role";
 import { getBasicRoles, createRole } from "@/app/_api/role/root/Role";
 import { getCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
@@ -93,6 +93,7 @@ export default function EventPage() {
             ? String(response.data?.response)
             : String(response.error?.response)
         );
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error creating role:", error);
@@ -111,10 +112,13 @@ export default function EventPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleDelete = (email: string) => {
-    console.log(email);
-    setRoleList((prev) => prev.filter((item) => item.email !== email));
-    // delete role
+  const handleDelete = async (email: string, role: string) => {
+    const cookie = await getCookie("event");
+    if (cookie && "event" in cookie) {
+      const data = { event_name: cookie.event, user_email: email, role };
+      await deleteRole(data);
+      window.location.reload();
+    }
   };
 
   return (
@@ -305,10 +309,10 @@ export default function EventPage() {
                           className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-md p-2"
                         >
                           <button
-                            onClick={() => handleDelete(item.email)}
+                            onClick={() => handleDelete(item.email, item.role)}
                             className="w-full text-left text-sm p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-800"
                           >
-                            Delete
+                            Delete Role
                           </button>
                         </div>
                       )}
