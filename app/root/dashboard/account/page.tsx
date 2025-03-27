@@ -15,12 +15,16 @@ import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
 import { Logout } from "@/app/_api/auth/Logout";
-import { GetUserData, UpdateUserData } from "@/app/_api/account/UserData";
 import {
   EventDataCount,
   VoiceFeedbackCount,
   VoiceFeedbackReportCount,
 } from "@/app/_api/account/EventData";
+import {
+  CloseRootAccount,
+  GetRootData,
+  UpdateRootData,
+} from "@/app/_api/account/root/RootData";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -46,8 +50,8 @@ export default function AccountPage() {
   const [passwordError, setPasswordError] = useState<React.ReactNode>(null);
   const [userDataError, setUserDataError] = useState("");
 
-  const userData = async () => {
-    const response = await GetUserData();
+  const rootData = async () => {
+    const response = await GetRootData();
 
     if (response && "data" in response && response.data) {
       setAccountDetails({
@@ -89,7 +93,7 @@ export default function AccountPage() {
   };
 
   useEffect(() => {
-    userData();
+    rootData();
     userEventData();
     voiceFeedback();
     voiceFeedbackReport();
@@ -113,7 +117,7 @@ export default function AccountPage() {
         data[element] = accountDetails[element as keyof typeof accountDetails];
       }
     });
-    const response = await UpdateUserData(data);
+    const response = await UpdateRootData(data);
     if (response?.status == "error") {
       setUserDataError(response.error?.response ?? "error in updating");
     } else {
@@ -169,7 +173,7 @@ export default function AccountPage() {
       return;
     }
 
-    const response = await UpdateUserData({ password: password.newPassword });
+    const response = await UpdateRootData({ password: password.newPassword });
 
     if (response?.status == "success") {
       setPasswordError(
@@ -189,7 +193,13 @@ export default function AccountPage() {
     }
   };
 
-  const closeAccount = () => {};
+  const closeAccount = async () => {
+    const response = await CloseRootAccount();
+    console.log(response);
+    if (response && response["status"] == "success") {
+      router.push("/auth/signin?response=root account closed");
+    }
+  };
 
   return (
     <>
@@ -426,7 +436,7 @@ export default function AccountPage() {
                 <CardTitle>Account Closing</CardTitle>
               </CardHeader>
               <CardContent>
-                <Button className="bg-red-600 text-white">Close Account</Button>
+                <Button onClick={closeAccount} className="bg-red-600 text-white">Close Account</Button>
               </CardContent>
             </Card>
           </div>

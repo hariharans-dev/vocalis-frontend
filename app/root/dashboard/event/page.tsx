@@ -181,8 +181,6 @@ export default function EventPage() {
 
   const handleDeleteEvent = async (event: string) => {
     const currentEvent = await getCookie("event");
-    console.log(event);
-    console.log(currentEvent);
     if (
       currentEvent &&
       "event" in currentEvent &&
