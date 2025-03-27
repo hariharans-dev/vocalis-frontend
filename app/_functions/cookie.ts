@@ -15,3 +15,9 @@ export async function createCookie(name: string, data: any) {
   (await cookieStore).set(name, stringifiedValue);
   return "success";
 }
+
+export async function removeCookie(name: string) {
+  const cookieStore = cookies();
+  (await cookieStore).delete(name);
+  return "success";
+}

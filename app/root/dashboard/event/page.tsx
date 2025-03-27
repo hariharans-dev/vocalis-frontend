@@ -2,25 +2,25 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SearchBar } from "@/components/search-bar";
 import {
   getEventData,
   getEventRole,
   updateEventData,
 } from "@/app/_api/event/EventData";
-import { createCookie, getCookie } from "@/app/_functions/cookie";
+import { createEvent, deleteEvent } from "@/app/_api/event/root/Event";
+import { createCookie, getCookie, removeCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-// import {} from "@/app/_api/user/account/EventData";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 export default function EventPage() {
   interface SearchItem {
@@ -40,6 +40,11 @@ export default function EventPage() {
     };
   }
 
+  interface NewEvent {
+    event_name: string;
+    description: string;
+  }
+
   const [searchItems, setSearchItems] = useState<SearchItem[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,10 +60,15 @@ export default function EventPage() {
       date: "",
     },
   });
+  const [newEvent, setNewEvent] = useState<NewEvent>({
+    event_name: "",
+    description: "",
+  });
+  const [newEventError, setNewEventError] = useState("");
   const [role, setRole] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [userDataError, setUserDataError] = useState("");
-  const [isSelectEvent, setSelectEvent] = useState(false);
+  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
   const filteredItems = searchQuery
     ? searchItems.filter((item) =>
@@ -68,34 +78,15 @@ export default function EventPage() {
 
   const EventRoleData = async () => {
     const response = await getEventRole();
-    if (response && response.data) {
-      const eventRoleMap: Record<
-        string,
-        { id: string; label: string; roles: string[] }
-      > = {};
-
-      response.data.forEach((element: any, index: number) => {
-        const eventName = element.event.name;
-        const roleName = element.role_list.name;
-
-        if (!eventRoleMap[eventName]) {
-          eventRoleMap[eventName] = {
-            id: "" + index, // Unique ID for the event
-            label: eventName,
-            roles: [roleName], // Start with first role
-          };
-        } else {
-          eventRoleMap[eventName].roles.push(roleName);
-        }
-      });
-
-      // Convert object to array and update state
-      setSearchItems(
-        Object.values(eventRoleMap).map((item) => ({
-          ...item,
-          role: item.roles.join(", "), // Join multiple roles with a comma
-        }))
+    if (response?.data) {
+      const items: SearchItem[] = response.data.map(
+        (element: any, index: number) => ({
+          id: `${index}`,
+          label: element.event.name,
+          role: element.role_list.name,
+        })
       );
+      setSearchItems(items);
     }
   };
 
@@ -119,13 +110,23 @@ export default function EventPage() {
     EventData();
   }, []);
 
-  const handleEventSelected = (item: any) => {
-    if (item.role == "admin, reporter") {
-      createCookie("event", { event: item.label, role: "admin" });
+  const createEventFunc = async () => {
+    if (newEvent.event_name == "") {
+      setNewEventError("event name missing");
     } else {
-      createCookie("event", { event: item.label, role: item.role });
+      const response = await createEvent(newEvent);
+      if (response.status == "success") {
+        setNewEventError(String(response.data?.response));
+        createCookie("event", { event: newEvent.event_name, role: "root" });
+        window.location.reload();
+      } else {
+        setNewEventError(String(response.error?.response));
+      }
     }
+  };
 
+  const handleEventSelected = (item: any) => {
+    createCookie("event", { event: item.label, role: item.role });
     window.location.reload();
   };
 
@@ -178,10 +179,84 @@ export default function EventPage() {
     }
   };
 
+  const handleDeleteEvent = async (event: string) => {
+    const currentEvent = await getCookie("event");
+    if (
+      currentEvent &&
+      "event" in currentEvent &&
+      currentEvent.event == event
+    ) {
+      removeCookie("event");
+    }
+    await deleteEvent(event);
+    window.location.reload();
+  };
+
   return (
     <>
       <div className="flex-col">
         <div className="flex-1 space-y-4 p-8 pt-6">
+          <div>
+            <div className="flex items-center justify-between space-y-2 mb-3">
+              <h2 className="text-2xl font-bold tracking-tight">
+                Create Event
+              </h2>
+            </div>
+            <Card className="col-span-4 p-4">
+              <CardContent>
+                <div className="space-y-3">
+                  {" "}
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="new-event-name" className="w-24">
+                      Event Name
+                    </Label>
+                    <Input
+                      id="new-event-name"
+                      type="text"
+                      name="event_name"
+                      value={newEvent.event_name}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setNewEvent({
+                          ...newEvent,
+                          [e.target.name]: e.target.value,
+                        });
+                      }}
+                      placeholder={newEvent.event_name}
+                      className="flex-1"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="new-event-description" className="w-24">
+                      Event Description
+                    </Label>
+                    <Input
+                      id="new-event-description"
+                      type="text"
+                      name="description"
+                      value={newEvent.description}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setNewEvent({
+                          ...newEvent,
+                          [e.target.name]: e.target.value,
+                        });
+                      }}
+                      placeholder={newEvent.description}
+                      className="flex-1"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {newEventError && (
+                      <p className="text-red-500 text-sm">{newEventError}</p>
+                    )}
+                  </div>
+                  <div className="mt-6">
+                    <Button onClick={createEventFunc}>Create</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {currentEventData.name != "" && (
             <div>
               <div className="flex items-center justify-between space-y-2 mb-3">
@@ -310,7 +385,7 @@ export default function EventPage() {
                         <p className="text-red-500 text-sm">{userDataError}</p>
                       )}
                     </div>
-                    {role == "admin" && (
+                    {role == "root" && (
                       <div className="mt-6">
                         {!isEditing ? (
                           <Button onClick={startEventEditing}>Update</Button>
@@ -331,12 +406,12 @@ export default function EventPage() {
             items={searchItems}
             query={searchQuery}
             onQueryChange={setSearchQuery}
-            onSelect={() => {}}
+            onSelect={handleEventSelected}
             filteredItems={filteredItems}
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {filteredItems.map((item: any) => (
-              <Card key={item.id} onClick={() => handleEventSelected(item)}>
+            {filteredItems.map((item: any, index: number) => (
+              <Card key={item.id}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -352,11 +427,42 @@ export default function EventPage() {
                     <circle cx="9" cy="7" r="4" />
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="cursor-pointer"
+                        onClick={(e) => e.stopPropagation()} // Prevents triggering Card click
+                      >
+                        <MoreHorizontal />
+                      </button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents accidental card selection
+                          handleDeleteEvent(item.label);
+                        }}
+                        className="w-full text-left text-sm p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-800"
+                      >
+                        Delete Event
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents accidental card selection
+                          handleEventSelected(item);
+                        }}
+                      >
+                        Select Event
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{item.label}</div>
                   <p className="text-xs text-muted-foreground">
-                    Roles assigned: {item.role}
+                    Role assigned: {item.role}
                   </p>
                 </CardContent>
               </Card>

@@ -9,10 +9,11 @@ import {
 import { Globe, Settings2, Calendar, Users, Mic } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const navigationItemsAdmin: SidebarItem[] = [
+const navigationItems: SidebarItem[] = [
   { name: "Overview", href: "/", icon: Globe, type: "item" },
   { type: "label", name: "Event" },
   { name: "Event", href: "/event", icon: Calendar, type: "item" },
+  { name: "Roles", href: "/role", icon: Users, type: "item" },
   { type: "label", name: "Live Event" },
   { name: "Voice Feedback", href: "/voicefeedback", icon: Mic, type: "item" },
   {
@@ -33,16 +34,6 @@ const navigationItemsAdmin: SidebarItem[] = [
   { name: "Account", href: "/account", icon: Settings2, type: "item" },
 ];
 
-const navigationItemsReporter: SidebarItem[] = [
-  { name: "Overview", href: "/", icon: Globe, type: "item" },
-  { type: "label", name: "Event" },
-  { name: "Event", href: "/event", icon: Calendar, type: "item" },
-  { type: "label", name: "Live Event" },
-  { name: "Voice Feedback", href: "/voicefeedback", icon: Mic, type: "item" },
-  { type: "label", name: "Account" },
-  { name: "Account", href: "/account", icon: Settings2, type: "item" },
-];
-
 const navigationItemsGuest: SidebarItem[] = [
   { type: "label", name: "Event" },
   { name: "Event", href: "/event", icon: Calendar, type: "item" },
@@ -56,22 +47,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchCookie = async () => {
       const cookie = await getCookie("event");
-      setRole(cookie?.role ?? null); // Default to null if no role is found
+      setRole(cookie?.role ?? null);
     };
     fetchCookie();
   }, []);
 
   return (
     <SidebarLayout
-      items={
-        role === "admin"
-          ? navigationItemsAdmin
-          : role === "reporter"
-          ? navigationItemsReporter
-          : navigationItemsGuest
-      }
+      items={role === "root" ? navigationItems : navigationItemsGuest}
       sidebarTop={<SidebarTopContent />}
-      basePath={`/user/dashboard`}
+      basePath={`/root/dashboard`}
     >
       {children}
     </SidebarLayout>

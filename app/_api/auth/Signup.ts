@@ -44,7 +44,10 @@ export default async function ApiSignup(
   try {
     var response = await fetchData<ApiResponse>(path, options);
     if (response !== null && response.data?.token) {
-      setToken("authToken", response["data"]["token"]);
+      setToken(
+        "authToken",
+        JSON.stringify({ token: response["data"]["token"], role: "root" })
+      );
     }
     return response;
   } catch (error) {

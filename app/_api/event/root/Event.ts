@@ -2,24 +2,26 @@ import { APIRequestOptions, fetchData } from "../../FetchData";
 import { getToken } from "@/app/_api/Session";
 
 interface ApiResponse {
-  data?: any;
+  data?: { response: string };
   status?: any;
-  error?: any;
+  error?: { response: string };
 }
 
-export async function getEventRole() {
+export async function createEvent(data: any) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
-  const path = `${backendUrl}/role/list`;
+  const path = `${backendUrl}/event`;
   const options: APIRequestOptions = {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(data),
   };
+
   try {
     var response = await fetchData<ApiResponse>(path, options);
     return response;
@@ -28,44 +30,23 @@ export async function getEventRole() {
   }
 }
 
-export async function getEventData(event_name: string) {
+export async function deleteEvent(event_name: string) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
-  const path = `${backendUrl}/event/get`;
+  const path = `${backendUrl}/event`;
   const options: APIRequestOptions = {
-    method: "POST",
+    method: "DELETE",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ event_name }), 
+    body: JSON.stringify({ event_name }),
   };
+
   try {
     var response = await fetchData<ApiResponse>(path, options);
-    return response;
-  } catch (error) {
-    return { status: "error", error: { response: "internal server error" } };
-  }
-}
-
-export async function updateEventData(event_data: any) {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  var authToken = JSON.parse(getToken("authToken") ?? "null");
-
-  const path = `${backendUrl}/user`;
-  const options: APIRequestOptions = {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${authToken["token"]}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ event_data }),
-  };
-  try {
-    const response = await fetchData<ApiResponse>(path, options);
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };

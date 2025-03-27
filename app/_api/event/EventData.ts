@@ -1,4 +1,4 @@
-import { APIRequestOptions, fetchData } from "../../FetchData";
+import { APIRequestOptions, fetchData } from "../FetchData";
 import { getToken } from "@/app/_api/Session";
 
 interface ApiResponse {
@@ -7,7 +7,7 @@ interface ApiResponse {
   error?: any;
 }
 
-export async function EventDataCount() {
+export async function getEventRole() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
@@ -19,7 +19,6 @@ export async function EventDataCount() {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ count: "true" }),
   };
   try {
     var response = await fetchData<ApiResponse>(path, options);
@@ -29,19 +28,19 @@ export async function EventDataCount() {
   }
 }
 
-export async function VoiceFeedbackCount() {
+export async function getEventData(event_name: string) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
-  const path = `${backendUrl}/reporter/data/get`;
+  const path = `${backendUrl}/event/get`;
   const options: APIRequestOptions = {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ count: "true" }),
+    body: JSON.stringify({ event_name }),
   };
   try {
     var response = await fetchData<ApiResponse>(path, options);
@@ -51,22 +50,22 @@ export async function VoiceFeedbackCount() {
   }
 }
 
-export async function VoiceFeedbackReportCount() {
+export async function updateEventData(event_data: any) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   var authToken = JSON.parse(getToken("authToken") ?? "null");
 
-  const path = `${backendUrl}/reporter/report/get`;
+  const path = `${backendUrl}/event`;
   const options: APIRequestOptions = {
-    method: "POST",
+    method: "PUT",
     headers: {
       Authorization: `Bearer ${authToken["token"]}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ count: "true" }),
+    body: JSON.stringify(event_data),
   };
   try {
-    var response = await fetchData<ApiResponse>(path, options);
+    const response = await fetchData<ApiResponse>(path, options);
     return response;
   } catch (error) {
     return { status: "error", error: { response: "internal server error" } };
