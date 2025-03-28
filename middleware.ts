@@ -5,15 +5,15 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const cookie = request.cookies.get("authToken");
 
-  let token: string | null = null;
-  let role: string | null = null;
+  let token: string | undefined = undefined; // Ensure it's undefined, not null
+  let role: string | undefined = undefined;
 
   // 🛠️ Parse Auth Token Cookie Safely
   if (cookie) {
     try {
       const parsedCookie = JSON.parse(cookie.value);
-      token = parsedCookie.token;
-      role = parsedCookie.role;
+      token = parsedCookie.token || undefined; // Convert null to undefined
+      role = parsedCookie.role || undefined;
     } catch (error) {
       console.error("Invalid auth cookie:", error);
       return redirectToSignIn(request, "session expired");
@@ -38,7 +38,9 @@ export async function middleware(request: NextRequest) {
   const sessionActive = sessionCheck === "valid";
 
   // 🏠 Public Pages - Allow Access If Not Logged In
-  if (["/", "/auth/signin", "/auth/signup"].some((p) => pathname.startsWith(p))) {
+  if (
+    ["/", "/auth/signin", "/auth/signup"].some((p) => pathname.startsWith(p))
+  ) {
     if (sessionActive && role) {
       return redirectToDashboard(request, role);
     }
@@ -96,7 +98,10 @@ function redirectToDashboard(request: NextRequest, role: string) {
  */
 function redirectToSignIn(request: NextRequest, responseMessage: string) {
   return NextResponse.redirect(
-    new URL(`/auth/signin?response=${encodeURIComponent(responseMessage)}`, request.url)
+    new URL(
+      `/auth/signin?response=${encodeURIComponent(responseMessage)}`,
+      request.url
+    )
   );
 }
 
