@@ -43,24 +43,6 @@ export async function middleware(request: NextRequest) {
 
   const sessionActive = sessionCheck === "valid";
 
-  if (
-    pathname === "/" ||
-    pathname.startsWith("/auth/signin") ||
-    pathname.startsWith("/auth/signup")
-  ) {
-    if (sessionActive && role) {
-      const rootDashboard = "/root/dashboard";
-      const userDashboard = "/user/dashboard";
-      if (role === "root" && pathname !== rootDashboard) {
-        return NextResponse.redirect(new URL(rootDashboard, request.url));
-      }
-      if (role === "user" && pathname !== userDashboard) {
-        return NextResponse.redirect(new URL(userDashboard, request.url));
-      }
-    }
-    return NextResponse.next();
-  }
-
   if (pathname.startsWith("/root/dashboard")) {
     if (!sessionActive) {
       return NextResponse.redirect(
@@ -113,5 +95,6 @@ async function isSessionValid(
 }
 
 export const config = {
-  matcher: "/((?!api).*)",
+  matcher: "/((?!api|auth).*)",// Exclude /api and /auth from middleware
 };
+
