@@ -27,12 +27,11 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  const sessionCheck = await isSessionValid(token, backendUrl, role);
-
-  if (sessionCheck === "backend_error") {
-    return NextResponse.redirect(
-      new URL("/auth/signin?response=backend unreachable", request.url)
-    );
+  var sessionCheck;
+  try {
+    sessionCheck = await isSessionValid(token, backendUrl, role);
+  } catch (error) {
+    new URL("/auth/signin?response=backend unreachable", request.url);
   }
 
   const sessionActive = sessionCheck === "valid";
