@@ -5,13 +5,13 @@ import { APIRequestOptions, fetchData } from "./app/_api/FetchData";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const cookie = request.cookies.get("authToken");
-  var token;
-  var role;
+
+  let token: string | undefined;
+  let role: string | undefined;
 
   if (cookie) {
-    let parsedCookie: { token?: string; role?: string } | null = null;
     try {
-      parsedCookie = cookie ? JSON.parse(cookie.value) : null;
+      const parsedCookie = JSON.parse(cookie.value);
       token = parsedCookie?.token;
       role = parsedCookie?.role;
     } catch (error) {
@@ -28,11 +28,14 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  var sessionCheck;
+  let sessionCheck: "valid" | "invalid" | "backend_error" = "invalid";
+
   try {
     sessionCheck = await isSessionValid(token, backendUrl);
   } catch (error) {
-    new URL("/auth/signin?response=backend unreachable", request.url);
+    return NextResponse.redirect(
+      new URL("/auth/signin?response=backend unreachable", request.url)
+    );
   }
 
   if (sessionCheck === "backend_error") {
@@ -43,26 +46,24 @@ export async function middleware(request: NextRequest) {
 
   const sessionActive = sessionCheck === "valid";
 
-  if (pathname.startsWith("/root/dashboard")) {
-    if (!sessionActive) {
-      return NextResponse.redirect(
-        new URL("/auth/signin?response=session expired", request.url)
-      );
-    }
-    if (role != "root")
-      return NextResponse.redirect(new URL("/user/dashboard", request.url));
-    return NextResponse.next();
-  }
+  // Prevent infinite redirects by ensuring users are redirected only when necessary
+  if (sessionActive && role) {
+    const rootDashboard = "/root/dashboard";
+    const userDashboard = "/user/dashboard";
 
-  if (pathname.startsWith("/user/dashboard")) {
-    if (!sessionActive) {
+    if (pathname === "/") {
       return NextResponse.redirect(
-        new URL("/auth/signin?response=session expired", request.url)
+        new URL(role === "root" ? rootDashboard : userDashboard, request.url)
       );
     }
-    if (role != "user")
-      return NextResponse.redirect(new URL("/root/dashboard", request.url));
-    return NextResponse.next();
+
+    if (pathname.startsWith("/root/dashboard") && role !== "root") {
+      return NextResponse.redirect(new URL(userDashboard, request.url));
+    }
+
+    if (pathname.startsWith("/user/dashboard") && role !== "user") {
+      return NextResponse.redirect(new URL(rootDashboard, request.url));
+    }
   }
 
   return NextResponse.next();
@@ -85,7 +86,7 @@ async function isSessionValid(
 
     const response = await fetchData<any>(path, options);
 
-    if (response["status"] === "success") {
+    if (response?.status === "success") {
       return "valid";
     }
     return "invalid";
@@ -94,7 +95,7 @@ async function isSessionValid(
   }
 }
 
+// Exclude API, authentication, and static assets from middleware
 export const config = {
-  matcher: "/((?!api|auth).*)",// Exclude /api and /auth from middleware
+  matcher: "/((?!api|auth|_next|static|public|favicon.ico).*)",
 };
-
