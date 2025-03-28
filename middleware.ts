@@ -22,7 +22,9 @@ export async function middleware(request: NextRequest) {
   }
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   if (!backendUrl) {
+    console.log("backendurl not found", backendUrl);
     return NextResponse.redirect(
       new URL("/auth/signin?response=backend unreachable", request.url)
     );
