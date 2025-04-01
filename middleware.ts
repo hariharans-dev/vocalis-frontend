@@ -22,6 +22,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  console.log(backendUrl);
 
   if (!backendUrl) {
     console.log("backendurl not found", backendUrl);
