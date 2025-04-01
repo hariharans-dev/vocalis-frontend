@@ -16,12 +16,12 @@ import {
   getVoiceData,
   createVoiceReport,
   getVoiceReport,
-} from "@/app/_api/voicereport/VoiceReport";
+} from "@/app/api/voicereport/VoiceReport";
 import { Label } from "@/components/ui/label";
 import {
   createAudienceReport,
   getAudienceReport,
-} from "@/app/_api/audiencereport/Report";
+} from "@/app/api/audiencereport/Report";
 
 export default function AudienceReport() {
   interface GeneratedAudienceReportData {

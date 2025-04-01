@@ -7,8 +7,8 @@ import {
   getEventData,
   getEventRole,
   updateEventData,
-} from "@/app/_api/event/EventData";
-import { createEvent, deleteEvent } from "@/app/_api/event/root/Event";
+} from "@/app/api/event/EventData";
+import { createEvent, deleteEvent } from "@/app/api/event/root/Event";
 import { createCookie, getCookie, removeCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -107,7 +107,7 @@ export default function EventPage() {
   useEffect(() => {
     EventRoleData();
     EventData();
-  }, []);
+  });
 
   const createEventFunc = async () => {
     if (newEvent.event_name == "") {

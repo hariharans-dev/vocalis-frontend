@@ -9,7 +9,7 @@ import {
   getVoiceData,
   createVoiceReport,
   getVoiceReport,
-} from "@/app/_api/voicereport/VoiceReport";
+} from "@/app/api/voicereport/VoiceReport";
 
 export default function AudienceFeedback() {
   interface AudienceData {

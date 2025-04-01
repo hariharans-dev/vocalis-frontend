@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { APIRequestOptions, fetchData } from "./app/_api/FetchData";
+import { APIRequestOptions, fetchData } from "./app/api/FetchData";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
