@@ -55,8 +55,8 @@ export default function SignInForm() {
 function SignInFormContent({ role }: { role: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const param_response = searchParams.get("response");
-  const redirect = searchParams.get("redirect");
+  const param_response = searchParams?.get("response");
+  const redirect = searchParams?.get("redirect");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -70,7 +70,7 @@ function SignInFormContent({ role }: { role: string }) {
 
   useEffect(() => {
     if (param_response !== null) {
-      setResponse(param_response);
+      setResponse(String(param_response));
     }
   }, [param_response]);
 
@@ -81,6 +81,7 @@ function SignInFormContent({ role }: { role: string }) {
     const response = await ApiSignIn(email, password, role);
 
     if (role == "root") {
+      // const users = await api.get("/api/users");
       if (response?.data) {
         setIsRedirecting(true);
         setTimeout(() => {
