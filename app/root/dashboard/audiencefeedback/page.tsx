@@ -7,7 +7,7 @@ import {
   createEndpoint,
   getAudienceData,
   getEndpoint,
-} from "@/app/_api/audiencefeedback/Endpoint";
+} from "@/app/api/audiencefeedback/Endpoint";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -68,7 +68,7 @@ export default function AudienceFeedback() {
   useEffect(() => {
     getEndpointFunc();
     getAudienceDataFunc();
-  }, []);
+  });
 
   return (
     <div className="flex flex-col w-full">

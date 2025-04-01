@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { sendVoiceFeedback } from "@/app/_api/voicefeedback/sendVoiceFeedback";
+import { sendVoiceFeedback } from "@/app/api/voicefeedback/sendVoiceFeedback";
 import { getCookie } from "@/app/_functions/cookie";
 
 function RecordingPage() {

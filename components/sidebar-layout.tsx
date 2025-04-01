@@ -22,7 +22,7 @@ import { getCookie } from "@/app/_functions/cookie";
 
 function useSegment(basePath: string) {
   const path = usePathname();
-  const result = path.slice(basePath.length, path.length);
+  const result = path?.slice(basePath.length, path.length);
   return result ? result : "/";
 }
 

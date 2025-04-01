@@ -3,8 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-import { deleteRole, getEventUsersRoles } from "@/app/_api/role/root/Role";
-import { getBasicRoles, createRole } from "@/app/_api/role/root/Role";
+import { deleteRole, getEventUsersRoles } from "@/app/api/role/root/Role";
+import { getBasicRoles, createRole } from "@/app/api/role/root/Role";
 import { getCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
