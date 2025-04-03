@@ -9,13 +9,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import ApiForgetPassword from "@/app/api/auth/ForgetPassword";
+import ApiForgetPassword from "@/app/_api/auth/ForgetPassword";
 
 export default function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const role: string = searchParams?.get("role") || "root";
+  const role: string = searchParams.get("role") || "root";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
