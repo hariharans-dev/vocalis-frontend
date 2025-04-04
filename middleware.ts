@@ -48,6 +48,10 @@ export async function middleware(request: NextRequest) {
 
   const sessionActive = sessionCheck === "valid";
 
+  if(!sessionActive){
+    return NextResponse.redirect(new URL("/auth/signin?response=session expired", request.url));
+  }
+
   // Prevent infinite redirects by ensuring users are redirected only when necessary
   if (sessionActive && role) {
     const rootDashboard = "/root/dashboard";

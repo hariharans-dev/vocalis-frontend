@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import { setToken } from "@/app/_api/Session";
 
 export default function EventPage() {
   interface SearchItem {
@@ -68,7 +69,6 @@ export default function EventPage() {
   const [role, setRole] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [userDataError, setUserDataError] = useState("");
-  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
   const filteredItems = searchQuery
     ? searchItems.filter((item) =>
@@ -126,7 +126,7 @@ export default function EventPage() {
   };
 
   const handleEventSelected = (item: any) => {
-    createCookie("event", { event: item.label, role: item.role });
+    setToken("event", JSON.stringify({ event: item.label, role: item.role }));
     window.location.reload();
   };
 
