@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { setToken } from "@/app/_api/Session";
+import { setToken } from "@/app/api/Session";
 
 export default function EventPage() {
   interface SearchItem {
