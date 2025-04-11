@@ -14,17 +14,17 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
-import { Logout } from "@/app/_api/auth/Logout";
+import { Logout } from "@/app/api/auth/Logout";
 import {
   EventDataCount,
   VoiceFeedbackCount,
   VoiceFeedbackReportCount,
-} from "@/app/_api/account/EventData";
+} from "@/app/api/account/EventData";
 import {
   CloseRootAccount,
   GetRootData,
   UpdateRootData,
-} from "@/app/_api/account/root/RootData";
+} from "@/app/api/account/root/RootData";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -436,7 +436,12 @@ export default function AccountPage() {
                 <CardTitle>Account Closing</CardTitle>
               </CardHeader>
               <CardContent>
-                <Button onClick={closeAccount} className="bg-red-600 text-white">Close Account</Button>
+                <Button
+                  onClick={closeAccount}
+                  className="bg-red-600 text-white"
+                >
+                  Close Account
+                </Button>
               </CardContent>
             </Card>
           </div>

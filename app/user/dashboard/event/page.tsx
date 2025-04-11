@@ -12,13 +12,13 @@ import {
   getEventData,
   getEventRole,
   updateEventData,
-} from "@/app/_api/event/EventData";
+} from "@/app/api/event/EventData";
 import { createCookie, getCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// import {} from "@/app/_api/user/account/EventData";
+// import {} from "@/app/api/user/account/EventData";
 
 export default function EventPage() {
   interface SearchItem {

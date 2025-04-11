@@ -14,18 +14,18 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
-import { Logout } from "@/app/_api/auth/Logout";
+import { Logout } from "@/app/api/auth/Logout";
 import {
   CloseUserAccount,
   GetUserData,
   UpdateUserData,
-} from "@/app/_api/account/UserData";
+} from "@/app/api/account/UserData";
 import {
   EventDataCount,
   VoiceFeedbackCount,
   VoiceFeedbackReportCount,
-} from "@/app/_api/account/EventData";
-import { getToken } from "@/app/_api/Session";
+} from "@/app/api/account/EventData";
+import { getToken } from "@/app/api/Session";
 
 export default function AccountPage() {
   const router = useRouter();

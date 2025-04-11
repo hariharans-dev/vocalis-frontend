@@ -7,11 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useSearchParams } from "next/navigation";
-import { createAudienceData } from "../_api/audience/Audience";
+import { createAudienceData } from "../api/audience/Audience";
 
 export default function AudienceFeedback() {
   const searchParams = useSearchParams();
-  const endpoint = searchParams.get("endpoint");
+  const endpoint = searchParams?.get("endpoint");
 
   interface AudienceData {
     name: string;

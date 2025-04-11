@@ -7,7 +7,7 @@ import {
   createEndpoint,
   getAudienceData,
   getEndpoint,
-} from "@/app/_api/audiencefeedback/Endpoint";
+} from "@/app/api/audiencefeedback/Endpoint";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
