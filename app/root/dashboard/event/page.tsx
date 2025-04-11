@@ -107,7 +107,7 @@ export default function EventPage() {
   useEffect(() => {
     EventRoleData();
     EventData();
-  }, []);
+  });
 
   const createEventFunc = async () => {
     if (newEvent.event_name == "") {
