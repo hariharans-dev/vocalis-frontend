@@ -99,6 +99,7 @@ export default function AccountPage() {
     voiceFeedbackReport();
   },[]);
 
+
   const startAccountEditing = () => {
     setIsEditing(true);
   };

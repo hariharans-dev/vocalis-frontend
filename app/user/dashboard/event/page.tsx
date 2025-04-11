@@ -117,6 +117,7 @@ export default function EventPage() {
     EventData();
   },[]);
 
+
   const handleEventSelected = (item: any) => {
     if (item.role == "admin, reporter") {
       createCookie("event", { event: item.label, role: "admin" });
