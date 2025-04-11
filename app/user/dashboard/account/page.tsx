@@ -97,7 +97,7 @@ export default function AccountPage() {
     userEventData();
     voiceFeedback();
     voiceFeedbackReport();
-  });
+  }, []);
 
   const startAccountEditing = () => {
     setIsEditing(true);

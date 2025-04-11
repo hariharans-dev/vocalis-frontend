@@ -97,7 +97,7 @@ export default function AccountPage() {
     userEventData();
     voiceFeedback();
     voiceFeedbackReport();
-  });
+  },[]);
 
   const startAccountEditing = () => {
     setIsEditing(true);
@@ -227,7 +227,7 @@ export default function AccountPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">User</div>
+                <div className="text-2xl font-bold">Root</div>
                 <p className="text-xs text-muted-foreground">
                   Access event functionalities
                 </p>

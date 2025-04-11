@@ -115,7 +115,7 @@ export default function EventPage() {
   useEffect(() => {
     EventRoleData();
     EventData();
-  });
+  },[]);
 
   const handleEventSelected = (item: any) => {
     if (item.role == "admin, reporter") {

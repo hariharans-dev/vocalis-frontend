@@ -107,7 +107,7 @@ export default function EventPage() {
   useEffect(() => {
     EventRoleData();
     EventData();
-  });
+  }, []);
 
   const createEventFunc = async () => {
     if (newEvent.event_name == "") {
@@ -116,6 +116,7 @@ export default function EventPage() {
       const response = await createEvent(newEvent);
       if (response.status == "success") {
         setNewEventError(String(response.data?.response));
+        removeCookie("event");
         createCookie("event", { event: newEvent.event_name, role: "root" });
         window.location.reload();
       } else {
