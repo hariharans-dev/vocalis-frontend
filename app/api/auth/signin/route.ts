@@ -13,7 +13,6 @@ export async function POST(req: Request) {
   const email = body?.email ?? null;
   const password = body?.password ?? null;
   const role = body?.role ?? null;
-  console.log("authToken: ", await getToken("authToken"));
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -28,7 +27,6 @@ export async function POST(req: Request) {
   try {
     const response = await fetchData<ApiResponse>(path, options);
     let res = NextResponse.json(response);
-    console.log(response);
     var token;
     if (response?.status == "success") {
       if (role == "root") {
