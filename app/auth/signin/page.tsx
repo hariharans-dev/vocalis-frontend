@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import ApiSignIn from "@/app/api/auth/Signin";
 import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useSearchParams } from "next/navigation";
@@ -78,11 +77,23 @@ function SignInFormContent({ role }: { role: string }) {
     e.preventDefault();
     setIsLoading(true);
 
-    const response = await ApiSignIn(email, password, role);
+    var response = await fetch("/api/auth/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    response = await response.json();
+    console.log("API response:", response);
 
     if (role == "root") {
-      // const users = await api.get("/api/users");
-      if (response?.data) {
+      console.log("root");
+      if (String(response.status) == "success") {
         setIsRedirecting(true);
         setTimeout(() => {
           if (redirect) {
@@ -91,13 +102,14 @@ function SignInFormContent({ role }: { role: string }) {
             router.push("/root/dashboard");
           }
         }, 500);
-      } else if (response?.error) {
-        setResponse(response["error"]["response"]);
+      } else if (String(response.status) == "error" && "error" in response) {
+        setResponse((response.error as { response?: string })?.response || "");
       } else {
         setResponse("internal server error");
       }
     } else {
-      if (response?.data) {
+      console.log("user");
+      if (String(response.status) == "success") {
         setIsRedirecting(true);
         setTimeout(() => {
           if (redirect) {
@@ -106,8 +118,8 @@ function SignInFormContent({ role }: { role: string }) {
             router.push("/user/dashboard");
           }
         }, 500);
-      } else if (response?.error) {
-        setResponse(response["error"]["response"]);
+      } else if (String(response.status) == "error" && "error" in response) {
+        setResponse((response.error as { response?: string })?.response || "");
       } else {
         setResponse("internal server error");
       }
