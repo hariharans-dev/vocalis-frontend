@@ -1,27 +1,49 @@
-import Cookies from "js-cookie";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-export const setToken = (name: string, token: any | undefined) => {
+/**
+ * Set a cookie on the response with a given name and token object.
+ */
+export const setToken = (
+  res: NextResponse,
+  name: string,
+  token: any
+): NextResponse => {
   const expireTimeInHours = process.env.NEXT_PUBLIC_SESSION_EXPIRE;
 
-  if (!expireTimeInHours || !token) {
-    return;
-  }
+  if (!expireTimeInHours || !token) return res;
 
-  const expireTimeInHoursNumber = parseInt(expireTimeInHours, 10);
+  const maxAge = parseInt(expireTimeInHours, 10) * 60 * 60;
 
-  if (isNaN(expireTimeInHoursNumber)) {
-    return;
-  }
+  if (isNaN(maxAge)) return res;
 
-  const expiresInSeconds = expireTimeInHoursNumber * 60 * 60;
-  const expires = new Date(new Date().getTime() + expiresInSeconds * 1000);
-  Cookies.set(name, token, { expires: expires });
+  res.cookies.set(name, JSON.stringify(token), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    sameSite: "lax",
+    maxAge,
+  });
+
+  return res;
 };
 
-export const getToken = (name: string): string | undefined => {
-  return Cookies.get(name);
+/**
+ * Get a cookie value by name from the request context.
+ */
+export const getToken = async (name: string): Promise<string> => {
+  const cookieStore = cookies();
+  return (await cookieStore).get(name)?.value || "";
 };
 
-export const removeToken = (name: string): void => {
-  Cookies.remove(name);
+/**
+ * Remove a cookie by setting maxAge to 0 on the response.
+ */
+export const removeToken = (res: NextResponse, name: string): NextResponse => {
+  res.cookies.set(name, "", {
+    maxAge: 0,
+    path: "/",
+  });
+
+  return res;
 };

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { APIRequestOptions, fetchData } from "../../FetchData";
-import { getToken, setToken } from "../../Session";
+import { setToken } from "../../Session";
 
 interface ApiResponse {
   data?: any;
@@ -12,12 +12,10 @@ export async function POST(req: Request) {
   const body = await req.json();
   const email = body?.email ?? null;
   const password = body?.password ?? null;
-  const role = body?.role ?? null;
-  console.log("authToken: ", await getToken("authToken"));
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const path = `${backendUrl}/auth/root`;
+  const path = `${backendUrl}/root`;
   const options: APIRequestOptions = {
     method: "POST",
     headers: {
@@ -27,22 +25,10 @@ export async function POST(req: Request) {
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);
-    let res = NextResponse.json(response);
-    console.log(response);
-    var token;
-    if (response?.status == "success") {
-      if (role == "root") {
-        token = { token: response.data?.token, role: "root" };
-      } else if (role == "user") {
-        token = { token: response.data?.token, role: "user" };
-      } else {
-        return NextResponse.json({
-          status: "error",
-          error: { response: "internal server error" },
-        });
-      }
+    var res = NextResponse.json(response);
+    if (response.status == "success") {
+      setToken(res, "authToken", { token: response.data?.token, role: "root" });
     }
-    setToken(res, "authToken", token);
     return res;
   } catch (error) {
     return NextResponse.json({

@@ -75,6 +75,7 @@ function SignInFormContent({ role }: { role: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(e);
     setIsLoading(true);
 
     var response = await fetch("/api/auth/signin", {
@@ -85,14 +86,13 @@ function SignInFormContent({ role }: { role: string }) {
       body: JSON.stringify({
         email,
         password,
+        role,
       }),
     });
 
     response = await response.json();
-    console.log("API response:", response);
 
     if (role == "root") {
-      console.log("root");
       if (String(response.status) == "success") {
         setIsRedirecting(true);
         setTimeout(() => {
