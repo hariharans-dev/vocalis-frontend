@@ -48,8 +48,10 @@ export async function middleware(request: NextRequest) {
 
   const sessionActive = sessionCheck === "valid";
 
-  if(!sessionActive){
-    return NextResponse.redirect(new URL("/auth/signin?response=session expired", request.url));
+  if (!sessionActive) {
+    return NextResponse.redirect(
+      new URL("/auth/signin?response=session expired", request.url)
+    );
   }
 
   // Prevent infinite redirects by ensuring users are redirected only when necessary
@@ -103,5 +105,5 @@ async function isSessionValid(
 
 // Exclude API, authentication, and static assets from middleware
 export const config = {
-  matcher: "/((?!api|auth|_next|static|public|favicon.ico).*)",
+  matcher: ["/((?!api|auth|_next|static|public|favicon.ico|$).*)"],
 };
