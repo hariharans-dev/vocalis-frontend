@@ -1,0 +1,168 @@
+import { NextResponse } from "next/server";
+import { APIRequestOptions, fetchData } from "../FetchData";
+import { cookies } from "next/headers";
+
+interface ApiResponse {
+  data?: any;
+  status?: any;
+  error?: any;
+}
+
+export async function POST(req: Request) {
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    if (!cookie) {
+      throw new Error("missing auth token");
+    }
+
+    const parsedCookie = JSON.parse(cookie) as { token: string; role?: string };
+    const token = parsedCookie.token;
+    console.log(token);
+
+    if (!token) {
+      throw new Error("invalid auth token format");
+    }
+
+    const path = `${backendUrl}/root/get`;
+    const options: APIRequestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({}), // adjust payload if needed
+    };
+
+    const response = await fetchData<ApiResponse>(path, options);
+    return NextResponse.json<ApiResponse>(response);
+  } catch (error: any) {
+    console.error("POST /root/get error:", error);
+
+    let status = 500;
+    let message = "internal server error";
+
+    if (error.message === "missing auth token") {
+      status = 401;
+      message = "missing auth token";
+    } else if (error.message === "invalid auth token format") {
+      status = 400;
+      message = "invalid auth token format";
+    }
+
+    return NextResponse.json<ApiResponse>(
+      {
+        status: "error",
+        error: { response: message },
+      },
+      { status }
+    );
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    if (!cookie) {
+      throw new Error("missing auth token");
+    }
+
+    const parsedCookie = JSON.parse(cookie) as { token: string; role?: string };
+    const token = parsedCookie.token;
+    console.log(token);
+
+    if (!token) {
+      throw new Error("invalid auth token format");
+    }
+
+    const path = `${backendUrl}/root`;
+    const options: APIRequestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body), // adjust payload if needed
+    };
+
+    const response = await fetchData<ApiResponse>(path, options);
+    return NextResponse.json<ApiResponse>(response);
+  } catch (error: any) {
+    console.error("POST /root/get error:", error);
+
+    let status = 500;
+    let message = "internal server error";
+
+    if (error.message === "missing auth token") {
+      status = 401;
+      message = "missing auth token";
+    } else if (error.message === "invalid auth token format") {
+      status = 400;
+      message = "invalid auth token format";
+    }
+
+    return NextResponse.json<ApiResponse>(
+      {
+        status: "error",
+        error: { response: message },
+      },
+      { status }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    if (!cookie) {
+      throw new Error("missing auth token");
+    }
+
+    const parsedCookie = JSON.parse(cookie) as { token: string; role?: string };
+    const token = parsedCookie.token;
+    console.log(token);
+
+    if (!token) {
+      throw new Error("invalid auth token format");
+    }
+
+    const path = `${backendUrl}/root`;
+    const options: APIRequestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await fetchData<ApiResponse>(path, options);
+    return NextResponse.json<ApiResponse>(response);
+  } catch (error: any) {
+    console.error("POST /root/get error:", error);
+
+    let status = 500;
+    let message = "internal server error";
+
+    if (error.message === "missing auth token") {
+      status = 401;
+      message = "missing auth token";
+    } else if (error.message === "invalid auth token format") {
+      status = 400;
+      message = "invalid auth token format";
+    }
+
+    return NextResponse.json<ApiResponse>(
+      {
+        status: "error",
+        error: { response: message },
+      },
+      { status }
+    );
+  }
+}
