@@ -6,8 +6,8 @@ import { cookies } from "next/headers";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  // const cookie = await getToken("authToken");
   const cookie = (await cookies()).get("authToken")?.value;
+  (await cookies()).delete("eventToken");
 
   var token: string | undefined;
   var role: string | undefined;
