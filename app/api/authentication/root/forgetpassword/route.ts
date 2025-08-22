@@ -49,7 +49,6 @@ export async function PUT(req: Request) {
       },
       body: JSON.stringify({ password }),
     };
-    console.log(options);
     var response = await fetchData<ApiResponse>(path, options);
     return NextResponse.json(response);
   } catch (error) {

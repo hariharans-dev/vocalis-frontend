@@ -1,15 +1,9 @@
 "use client";
 
 import { JSX, useEffect, useState } from "react";
-import { createCookie, getCookie } from "@/app/_functions/cookie";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  getVoiceData,
-  createVoiceReport,
-  getVoiceReport,
-} from "@/app/api/voicereport/VoiceReport";
 
 export default function AudienceFeedback() {
   interface AudienceData {
@@ -53,10 +47,18 @@ export default function AudienceFeedback() {
     useState("");
 
   const getAudienceDataFunc = async () => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
       const data: Object = { event_name: cookie.event, option: "all" };
-      const response = await getVoiceData(data);
+      const res = await fetch("/api/reporter/data/get", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      const response = await res.json();
       if (response?.data && Array.isArray(response.data)) {
         const formattedData: AudienceData[] = response.data.map(
           (element: any, index: number) => ({
@@ -71,9 +73,17 @@ export default function AudienceFeedback() {
   };
 
   const createVoiceReportFunc = async () => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
-      const response = await createVoiceReport(String(cookie.event));
+      const res = await fetch("/api/reporter/report", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
       if (response?.data?.response) {
         setVoiceFeedbackResponseData(String(response.data.response));
       }
@@ -81,9 +91,17 @@ export default function AudienceFeedback() {
   };
 
   const getVoiceReportFunc = async () => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie?.event) {
-      const response = await getVoiceReport(String(cookie.event));
+      const res = await fetch("/api/reporter/report/get", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
 
       if (
         response?.status === "success" &&
@@ -132,13 +150,6 @@ export default function AudienceFeedback() {
 
           <Button
             className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
-            onClick={getVoiceReportFunc}
-          >
-            Refresh
-          </Button>
-
-          <Button
-            className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
             onClick={() => {
               getAudienceDataFunc();
               setShowVoiceData(!showVoiceData);
@@ -146,6 +157,12 @@ export default function AudienceFeedback() {
             }}
           >
             {showVoiceData ? "Hide" : "Show"} Voice Feedbacks
+          </Button>
+          <Button
+            className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
+            onClick={getVoiceReportFunc}
+          >
+            Refresh
           </Button>
         </div>
 

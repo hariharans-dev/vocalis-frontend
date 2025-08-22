@@ -2,9 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-
-import { deleteRole, getEventUsersRoles } from "@/app/api/role/root/Role";
-import { getBasicRoles, createRole } from "@/app/api/role/root/Role";
 import { getCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,39 +29,46 @@ export default function EventPage() {
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Fetch Basic Roles
   const fetchBasicRoles = async () => {
     try {
-      const response = await getBasicRoles();
+      // const response = await getBasicRoles();
+      const res = await fetch("/api/role/rolelist", { method: "GET" });
+      const response = await res.json();
       if (
         response.status === "success" &&
         Array.isArray(response.data?.role_list)
       ) {
         setBasicRoles(response.data.role_list);
       }
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    }
+    } catch (error) {}
   };
 
   // Fetch Event Roles
   const fetchEventRoles = async () => {
     try {
-      const cookie = await getCookie("event");
+      const raw = document.cookie
+        .split("; ")
+        .find((r) => r.startsWith("eventToken="))
+        ?.split("=")[1];
+      const cookie = raw ? JSON.parse(atob(raw)) : null;
       if (cookie?.event) {
-        const response = await getEventUsersRoles(String(cookie.event));
+        const res = await fetch("/api/role/event/list", {
+          method: "POST",
+          body: JSON.stringify({ event_name: cookie.event }),
+        });
+        const response = await res.json();
         if (response.status === "success" && Array.isArray(response.data)) {
           setRoleList(
-            response.data.map((item) => ({
-              role: item.role_list?.name || "Unknown Role",
-              email: item.user?.email || "No Email Provided",
-            }))
+            response.data.map(
+              (item: { role_list: { name: any }; user: { email: any } }) => ({
+                role: item.role_list?.name || "Unknown Role",
+                email: item.user?.email || "No Email Provided",
+              })
+            )
           );
         }
       }
-    } catch (error) {
-      console.error("Error fetching event roles:", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -84,10 +88,19 @@ export default function EventPage() {
     }
 
     try {
-      const cookie = await getCookie("event");
+      const raw = document.cookie
+        .split("; ")
+        .find((r) => r.startsWith("eventToken="))
+        ?.split("=")[1];
+      const cookie = raw ? JSON.parse(atob(raw)) : null;
+
       if (cookie?.event) {
         const data = { event_name: cookie.event, ...newRole };
-        const response = await createRole(data);
+        const res = await fetch("/api/role", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+        const response = await res.json();
         setNewRoleError(
           response.status === "success"
             ? String(response.data?.response)
@@ -95,9 +108,7 @@ export default function EventPage() {
         );
         window.location.reload();
       }
-    } catch (error) {
-      console.error("Error creating role:", error);
-    }
+    } catch (error) {}
   };
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -113,10 +124,18 @@ export default function EventPage() {
   }, []);
 
   const handleDelete = async (email: string, role: string) => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
       const data = { event_name: cookie.event, user_email: email, role };
-      await deleteRole(data);
+      // await deleteRole(data);
+      await fetch("/api/role", {
+        method: "DELETE",
+        body: JSON.stringify(data),
+      });
       window.location.reload();
     }
   };
@@ -243,7 +262,6 @@ export default function EventPage() {
                     <div
                       key={index}
                       onClick={() => {
-                        console.log("Selected:", item);
                         setIsDropdownOpen(false);
                       }}
                       className="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
