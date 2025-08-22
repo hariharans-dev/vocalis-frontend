@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { APIRequestOptions, fetchData } from "../../FetchData";
-import { getToken, removeToken } from "../../Session";
+// import { getToken, removeToken } from "../../Session";
+import { cookies } from "next/headers";
 
 interface ApiResponse {
   data?: any;
@@ -24,7 +25,7 @@ export async function DELETE(req: Request) {
   try {
     const response = await fetchData<ApiResponse>(path, options);
     var res = NextResponse.json<ApiResponse>(response);
-    res = await removeToken(res, "authToken");
+    (await cookies()).delete("authToken");
     return res;
   } catch (error) {
     return NextResponse.json({

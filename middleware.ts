@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { APIRequestOptions, fetchData } from "./app/api/FetchData";
-import { getToken } from "./app/api/Session";
+// import { getToken } from "./app/api/Session";
+import { cookies } from "next/headers";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const cookie = await getToken("authToken");
+  // const cookie = await getToken("authToken");
+  const cookie = (await cookies()).get("authToken")?.value;
+  console.log(cookie);
 
   var token: string | undefined;
   var role: string | undefined;
