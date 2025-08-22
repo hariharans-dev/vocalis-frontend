@@ -20,6 +20,10 @@ export async function POST(req: Request) {
 
     const parsedCookie = JSON.parse(cookie) as { token: string; role?: string };
     const token = parsedCookie.token;
+<<<<<<< HEAD
+=======
+    console.log(token);
+>>>>>>> 7ae781e632b08507fb1e226fae2da15554ba4f8c
 
     if (!token) {
       throw new Error("invalid auth token format");
@@ -36,7 +40,10 @@ export async function POST(req: Request) {
     };
 
     const response = await fetchData<ApiResponse>(path, options);
+<<<<<<< HEAD
     console.log(response);
+=======
+>>>>>>> 7ae781e632b08507fb1e226fae2da15554ba4f8c
     return NextResponse.json<ApiResponse>(response);
   } catch (error: any) {
     console.error("POST /root/get error:", error);

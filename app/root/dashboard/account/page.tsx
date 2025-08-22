@@ -195,9 +195,14 @@ export default function AccountPage() {
   };
 
   const logout = async () => {
+<<<<<<< HEAD
     const res = await fetch("/api/authentication/logout", { method: "DELETE" });
     const response = await res.json();
     console.log(response);
+=======
+    const res = await fetch("/api/authentication/logout", { method: "POST" });
+    const response = await res.json();
+>>>>>>> 7ae781e632b08507fb1e226fae2da15554ba4f8c
     if (response && response["status"] == "success") {
       router.push("/auth/signin?response=logout successfull");
     }
