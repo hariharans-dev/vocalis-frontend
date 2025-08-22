@@ -54,10 +54,6 @@ export default function AudienceFeedback() {
       ?.split("=")[1];
     const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
-<<<<<<< HEAD
-=======
-      // const response = await createEndpoint(String(cookie.event));
->>>>>>> 20c256d31c77dfe0692eb037b885c57b1d237319
       const res = await fetch("/api/audience/endpoint", {
         method: "POST",
         body: JSON.stringify({ event_name: cookie.event }),
