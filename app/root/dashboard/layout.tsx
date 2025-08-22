@@ -1,6 +1,5 @@
 "use client";
 
-import { getCookie } from "@/app/_functions/cookie";
 import {
   SidebarLayout,
   SidebarItem,

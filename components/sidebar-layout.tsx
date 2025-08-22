@@ -18,7 +18,6 @@ import { buttonVariants } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { ColorModeSwitcher } from "./color-mode-switcher";
-import { getCookie } from "@/app/_functions/cookie";
 
 function useSegment(basePath: string) {
   const path = usePathname();
