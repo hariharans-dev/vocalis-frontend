@@ -7,7 +7,6 @@ import { cookies } from "next/headers";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const cookie = (await cookies()).get("authToken")?.value;
-  (await cookies()).delete("eventToken");
 
   var token: string | undefined;
   var role: string | undefined;
@@ -21,6 +20,7 @@ export async function middleware(request: NextRequest) {
       token = String(parsedCookie.token);
       role = String(parsedCookie.role);
     } catch (error) {
+      (await cookies()).delete("eventToken");
       return NextResponse.redirect(
         new URL("/auth/signin?response=invalid session", request.url)
       );
@@ -30,6 +30,7 @@ export async function middleware(request: NextRequest) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!backendUrl) {
+    (await cookies()).delete("eventToken");
     return NextResponse.redirect(
       new URL("/auth/signin?response=backend unreachable", request.url)
     );
@@ -40,12 +41,14 @@ export async function middleware(request: NextRequest) {
   try {
     sessionCheck = await isSessionValid(token, backendUrl);
   } catch (error) {
+    (await cookies()).delete("eventToken");
     return NextResponse.redirect(
       new URL("/auth/signin?response=backend unreachable", request.url)
     );
   }
 
   if (sessionCheck === "backend_error") {
+    (await cookies()).delete("eventToken");
     return NextResponse.redirect(
       new URL("/auth/signin?response=backend unreachable", request.url)
     );
@@ -54,6 +57,7 @@ export async function middleware(request: NextRequest) {
   const sessionActive = sessionCheck === "valid";
 
   if (!sessionActive) {
+    (await cookies()).delete("eventToken");
     return NextResponse.redirect(
       new URL("/auth/signin?response=session expired", request.url)
     );
