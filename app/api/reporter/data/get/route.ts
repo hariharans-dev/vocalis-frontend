@@ -20,6 +20,10 @@ export async function POST(req: Request) {
 
     const parsedCookie = JSON.parse(cookie) as { token: string; role?: string };
     const token = parsedCookie.token;
+<<<<<<< HEAD
+=======
+    console.log(token);
+>>>>>>> e6b1c3634c847316d186ee78ba84f79c70851bda
 
     if (!token) {
       throw new Error("invalid auth token format");
