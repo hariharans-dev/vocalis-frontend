@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import ApiSignIn from "@/app/api/auth/Signin";
 import { useRouter } from "next/navigation";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { useSearchParams } from "next/navigation";
@@ -78,11 +77,16 @@ function SignInFormContent({ role }: { role: string }) {
     e.preventDefault();
     setIsLoading(true);
 
-    const response = await ApiSignIn(email, password, role);
-
     if (role == "root") {
-      // const users = await api.get("/api/users");
-      if (response?.data) {
+      const res = await fetch("/api/authentication/root/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const response = await res.json(); // 👈 parse JSON
+
+      if (response && response?.data) {
         setIsRedirecting(true);
         setTimeout(() => {
           if (redirect) {
@@ -92,22 +96,30 @@ function SignInFormContent({ role }: { role: string }) {
           }
         }, 500);
       } else if (response?.error) {
-        setResponse(response["error"]["response"]);
+        setResponse(response.error?.response ?? "Unknown error");
       } else {
         setResponse("internal server error");
       }
     } else {
-      if (response?.data) {
+      const res = await fetch("/api/authentication/user/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const response = await res.json(); // 👈 parse JSON
+
+      if (response && response?.data) {
         setIsRedirecting(true);
         setTimeout(() => {
           if (redirect) {
             router.push(redirect);
           } else {
-            router.push("/user/dashboard");
+            router.push("/root/dashboard");
           }
         }, 500);
       } else if (response?.error) {
-        setResponse(response["error"]["response"]);
+        setResponse(response.error?.response ?? "Unknown error");
       } else {
         setResponse("internal server error");
       }
