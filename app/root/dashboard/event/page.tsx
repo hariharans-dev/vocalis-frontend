@@ -222,7 +222,6 @@ export default function EventPage() {
       document.cookie =
         "eventToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict";
     }
-    // await deleteEvent(event);
     await fetch("/api/event", {
       method: "DELETE",
       body: JSON.stringify({ event_name: event }),

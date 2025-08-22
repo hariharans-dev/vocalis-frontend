@@ -118,6 +118,9 @@ export default function EventPage() {
   }, []);
 
   const handleEventSelected = (item: any) => {
+    document.cookie =
+      "eventToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict";
+    console.log(item);
     if (item.role.includes("admin")) {
       const cookieValue = btoa(
         JSON.stringify({ event: item.label, role: "admin" })
