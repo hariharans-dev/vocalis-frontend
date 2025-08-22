@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import ApiForgetPassword from "@/app/api/auth/ForgetPassword";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -32,18 +31,32 @@ export default function SignUpForm() {
     } else {
       key = decodeURIComponent(key);
 
-      const response = await ApiForgetPassword(null, role, key, password);
+      var resp;
+      if (role == "root") {
+        resp = await fetch("/api/authentication/root/forgetpassword", {
+          method: "PUT",
+          headers: { "Content-type": "application-json" },
+          body: JSON.stringify({ key, password }),
+        });
+      } else {
+        resp = await fetch("/api/authentication/user/forgetpassword", {
+          method: "PUT",
+          headers: { "Content-type": "application-json" },
+          body: JSON.stringify({ key, password }),
+        });
+      }
+      const res = await resp.json();
 
-      if (response?.data) {
+      if (res?.data) {
         setIsRedirecting(true);
         setTimeout(() => {
           router.push("/auth/signin?response=password changed");
         }, 1000);
-      } else if (response != null) {
-        if (response.error) {
-          setResponse(response.error);
-        } else if (response.status && response.status >= 400) {
-          setResponse(`server error, status code: ${response.status}`);
+      } else if (res != null) {
+        if (res.error) {
+          setResponse(res.error);
+        } else if (res.status && res.status >= 400) {
+          setResponse(`server error, status code: ${res.status}`);
         } else {
           setResponse("API error");
         }
