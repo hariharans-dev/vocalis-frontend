@@ -14,19 +14,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
-import { Logout } from "@/app/api/auth/Logout";
-import {
-  CloseUserAccount,
-  GetUserData,
-  UpdateUserData,
-} from "@/app/api/account/UserData";
-import {
-  EventDataCount,
-  VoiceFeedbackCount,
-  VoiceFeedbackReportCount,
-} from "@/app/api/account/EventData";
-import { getToken } from "@/app/api/Session";
-
 export default function AccountPage() {
   const router = useRouter();
   const [password, setPassword] = useState({
@@ -35,9 +22,9 @@ export default function AccountPage() {
   });
 
   const [accountDetails, setAccountDetails] = useState({
-    name: "",
-    phone: "",
-    email: "",
+    name: "-",
+    phone: "-",
+    email: "-",
   });
   const [eventData, setEventData] = useState({
     total_count: 0,
@@ -51,7 +38,8 @@ export default function AccountPage() {
   const [userDataError, setUserDataError] = useState("");
 
   const userData = async () => {
-    const response = await GetUserData();
+    const res = await fetch("/api/user", { method: "POST" });
+    const response = await res.json();
 
     if (response && "data" in response && response.data) {
       setAccountDetails({
@@ -64,7 +52,11 @@ export default function AccountPage() {
   };
 
   const userEventData = async () => {
-    var response = await EventDataCount();
+    const res = await fetch("/api/role/list", {
+      method: "POST",
+      body: JSON.stringify({ count: "true" }),
+    });
+    const response = await res.json();
 
     if (response?.status == "success" && response?.data) {
       setEventData({
@@ -77,7 +69,11 @@ export default function AccountPage() {
   };
 
   const voiceFeedback = async () => {
-    var response = await VoiceFeedbackCount();
+    const res = await fetch("/api/reporter/data/get", {
+      method: "POST",
+      body: JSON.stringify({ count: "true" }),
+    });
+    const response = await res.json();
 
     if (response?.status == "success" && response?.data) {
       setVoiceCount(response.data.count);
@@ -85,7 +81,11 @@ export default function AccountPage() {
   };
 
   const voiceFeedbackReport = async () => {
-    var response = await VoiceFeedbackReportCount();
+    const res = await fetch("/api/reporter/report/get", {
+      method: "POST",
+      body: JSON.stringify({ count: "true" }),
+    });
+    const response = await res.json();
 
     if (response?.status == "success" && response?.data) {
       setVoiceReportCount(response.data.count);
@@ -97,7 +97,7 @@ export default function AccountPage() {
     userEventData();
     voiceFeedback();
     voiceFeedbackReport();
-  });
+  }, []);
 
   const startAccountEditing = () => {
     setIsEditing(true);
@@ -117,7 +117,11 @@ export default function AccountPage() {
         data[element] = accountDetails[element as keyof typeof accountDetails];
       }
     });
-    const response = await UpdateUserData(data);
+    const res = await fetch("/api/user", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    const response = await res.json();
     if (response?.status == "error") {
       setUserDataError(response.error?.response ?? "error in updating");
     } else {
@@ -173,7 +177,11 @@ export default function AccountPage() {
       return;
     }
 
-    const response = await UpdateUserData({ password: password.newPassword });
+    const res = await fetch("/api/user", {
+      method: "PUT",
+      body: JSON.stringify({ password: password.newPassword }),
+    });
+    const response = await res.json();
 
     if (response?.status == "success") {
       setPasswordError(
@@ -187,14 +195,22 @@ export default function AccountPage() {
   };
 
   const logout = async () => {
-    const response = await Logout();
+    const res = await fetch("/api/authentication/logout", {
+      method: "DELETE",
+    });
+    const response = await res.json();
     if (response && response["status"] == "success") {
       router.push("/auth/signin?response=logout successfull");
     }
   };
 
   const closeAccount = async () => {
-    const response = await CloseUserAccount();
+    // const response = await CloseUserAccount();
+    const res = await fetch("/api/user", {
+      method: "DELETE",
+      body: JSON.stringify({ password: password.newPassword }),
+    });
+    const response = await res.json();
     if (response && response["status"] == "success") {
       router.push("/auth/signin?response=user account closed");
     }

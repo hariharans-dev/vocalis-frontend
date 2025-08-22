@@ -3,13 +3,6 @@ import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SearchBar } from "@/components/search-bar";
-import {
-  getEventData,
-  getEventRole,
-  updateEventData,
-} from "@/app/api/event/EventData";
-import { createEvent, deleteEvent } from "@/app/api/event/root/Event";
-import { createCookie, getCookie, removeCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,12 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { setToken } from "@/app/api/Session";
 
 export default function EventPage() {
   interface SearchItem {
     id: string;
     label: string;
+    role: string;
   }
 
   interface CurrentEventData {
@@ -76,7 +69,11 @@ export default function EventPage() {
     : searchItems;
 
   const EventRoleData = async () => {
-    const response = await getEventRole();
+    const res = await fetch("/api/role/list", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    const response = await res.json();
     if (response?.data) {
       const items: SearchItem[] = response.data.map(
         (element: any, index: number) => ({
@@ -90,11 +87,19 @@ export default function EventPage() {
   };
 
   const EventData = async () => {
-    const cookie: Object = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
 
     if (cookie && "event" in cookie && "role" in cookie) {
       setRole(String(cookie.role));
-      var response = await getEventData(String(cookie.event));
+      const res = await fetch("/api/event/get", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
       if (response?.data) {
         setCurrentEventData({
           ...currentEventData,
@@ -107,17 +112,30 @@ export default function EventPage() {
   useEffect(() => {
     EventRoleData();
     EventData();
-  });
+  },[]);
 
   const createEventFunc = async () => {
     if (newEvent.event_name == "") {
       setNewEventError("event name missing");
     } else {
-      const response = await createEvent(newEvent);
+      // const response = await createEvent(newEvent);
+      const res = await fetch("/api/event", {
+        method: "POST",
+        body: JSON.stringify(newEvent),
+      });
+      const response = await res.json();
       if (response.status == "success") {
         setNewEventError(String(response.data?.response));
-        removeCookie("event");
-        createCookie("event", { event: newEvent.event_name, role: "root" });
+        document.cookie =
+          "eventToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict";
+
+        const cookieValue = btoa(
+          JSON.stringify({ event: newEvent.event_name, role: "root" })
+        );
+        const expires = new Date();
+        expires.setDate(expires.getDate() + 1);
+        document.cookie = `eventToken=${cookieValue}; path=/; expires=${expires.toUTCString()}; secure; samesite=strict`;
+
         window.location.reload();
       } else {
         setNewEventError(String(response.error?.response));
@@ -126,7 +144,14 @@ export default function EventPage() {
   };
 
   const handleEventSelected = (item: any) => {
-    setToken("event", JSON.stringify({ event: item.label, role: item.role }));
+    const cookieValue = btoa(
+      JSON.stringify({ event: item.label, role: item.role })
+    );
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 1);
+    document.cookie = `eventToken=${cookieValue}; path=/; expires=${expires.toUTCString()}; secure; samesite=strict`;
+
+    // reload so the server can read it via next/headers
     window.location.reload();
   };
 
@@ -147,7 +172,11 @@ export default function EventPage() {
     };
     delete data.event_detail;
 
-    const response = await updateEventData(data);
+    const res = await fetch("/api/event", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    const response = await res.json();
     if (response?.status == "error") {
       setUserDataError(response.error?.response ?? "error in updating");
     } else {
@@ -180,15 +209,24 @@ export default function EventPage() {
   };
 
   const handleDeleteEvent = async (event: string) => {
-    const currentEvent = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const currentEvent = raw ? JSON.parse(atob(raw)) : null;
     if (
       currentEvent &&
       "event" in currentEvent &&
       currentEvent.event == event
     ) {
-      removeCookie("event");
+      document.cookie =
+        "eventToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict";
     }
-    await deleteEvent(event);
+    // await deleteEvent(event);
+    await fetch("/api/event", {
+      method: "DELETE",
+      body: JSON.stringify({ event_name: event }),
+    });
     window.location.reload();
   };
 
