@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useSearchParams } from "next/navigation";
-import { createAudienceData } from "../api/audience/Audience";
 
 export default function AudienceFeedback() {
   const searchParams = useSearchParams();
@@ -47,7 +46,13 @@ export default function AudienceFeedback() {
     }
     var data: any = audienceData;
     data.event_endpoint = endpoint;
-    const response = await createAudienceData(data);
+    // const response = await createAudienceData(data);
+    const res = await fetch("/api/audience", {
+      method: "POST",
+      headers: { "Content-Type": "application-json" },
+      body: JSON.stringify(data),
+    });
+    const response = await res.json();
     if (response.status == "success") {
       setUserDataError(String(response.data?.response));
     } else {

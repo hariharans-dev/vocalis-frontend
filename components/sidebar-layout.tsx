@@ -215,7 +215,11 @@ export function SidebarLayout(props: {
 export function SidebarTopContent() {
   const [event, setEvent] = useState("No Event Selected");
   async function getEvent() {
-    const eventCookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const eventCookie = raw ? JSON.parse(atob(raw)) : null;
     if (eventCookie && eventCookie.event) {
       setEvent(eventCookie.event);
     }

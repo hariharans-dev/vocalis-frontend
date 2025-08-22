@@ -12,16 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  getVoiceData,
-  createVoiceReport,
-  getVoiceReport,
-} from "@/app/api/voicereport/VoiceReport";
-import { Label } from "@/components/ui/label";
-import {
-  createAudienceReport,
-  getAudienceReport,
-} from "@/app/api/audiencereport/Report";
+import { Label } from "@radix-ui/react-label";
 
 export default function AudienceReport() {
   interface GeneratedAudienceReportData {
@@ -96,9 +87,17 @@ export default function AudienceReport() {
   };
 
   const createAudienceReportFunc = async (UserData: Boolean = true) => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
-      const response = await createAudienceReport(String(cookie.event));
+      const res = await fetch("/api/audience/report", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
       if (response?.data?.response && UserData) {
         setVoiceFeedbackResponseData(String(response.data.response));
       }
@@ -106,13 +105,21 @@ export default function AudienceReport() {
   };
 
   const getAudienceReportFunc = async (limit: any = null) => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie?.event) {
       let data: any = { event_name: cookie.event, view: "all" };
       if (limit) {
         data.limit = limit;
       }
-      const response = await getAudienceReport(data);
+      const res = await fetch("/api/audience/report/get", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      const response = await res.json();
       if (
         response?.status === "success" &&
         Array.isArray(response.data) &&

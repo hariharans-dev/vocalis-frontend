@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCookie } from "@/app/_functions/cookie";
 
-import {
-  createEndpoint,
-  getAudienceData,
-  getEndpoint,
-} from "@/app/api/audiencefeedback/Endpoint";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
@@ -29,9 +23,17 @@ export default function AudienceFeedback() {
   const [endpoint, setEndpoint] = useState("");
 
   const getAudienceDataFunc = async () => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
-      const response = await getAudienceData(String(cookie["event"]));
+      const res = await fetch("/api/audience/data/get", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
       if (response?.data && Array.isArray(response.data)) {
         const formattedData: AudienceData[] = response.data.map(
           (element: any, index: number) => ({
@@ -46,9 +48,17 @@ export default function AudienceFeedback() {
   };
 
   const createEndpointfunc = async () => {
-    const cookie: Object = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
-      const response = await createEndpoint(String(cookie.event));
+      const res = await fetch("/api/audience/endpoint", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
       if (response.data) {
         window.location.reload();
       }
@@ -56,9 +66,17 @@ export default function AudienceFeedback() {
   };
 
   const getEndpointFunc = async () => {
-    const cookie: Object = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     if (cookie && "event" in cookie) {
-      const response = await getEndpoint(String(cookie.event));
+      const res = await fetch("/api/audience/endpoint/get", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
       if (response.data && "event_endpoint" in response.data) {
         setEndpoint(String(response.data.event_endpoint));
       }
@@ -68,8 +86,7 @@ export default function AudienceFeedback() {
   useEffect(() => {
     getEndpointFunc();
     getAudienceDataFunc();
-  },[]);
-
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
