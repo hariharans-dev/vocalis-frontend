@@ -14,18 +14,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 
-import { Logout } from "@/app/api/auth/Logout";
-import {
-  EventDataCount,
-  VoiceFeedbackCount,
-  VoiceFeedbackReportCount,
-} from "@/app/api/account/EventData";
-import {
-  CloseRootAccount,
-  GetRootData,
-  UpdateRootData,
-} from "@/app/api/account/root/RootData";
-
 export default function AccountPage() {
   const router = useRouter();
 
@@ -35,23 +23,27 @@ export default function AccountPage() {
   });
 
   const [accountDetails, setAccountDetails] = useState({
-    name: "",
-    phone: "",
-    email: "",
+    name: "-",
+    phone: "-",
+    email: "-",
   });
   const [eventData, setEventData] = useState({
-    total_count: 0,
-    admin_count: 0,
-    reporter_count: 0,
+    total_count: "-",
   });
-  const [voiceCount, setVoiceCount] = useState(0);
-  const [voiceReportCount, setVoiceReportCount] = useState(0);
+  const [voiceCount, setVoiceCount] = useState("-");
+  const [voiceReportCount, setVoiceReportCount] = useState("-");
   const [isEditing, setIsEditing] = useState(false);
   const [passwordError, setPasswordError] = useState<React.ReactNode>(null);
   const [userDataError, setUserDataError] = useState("");
 
   const rootData = async () => {
-    const response = await GetRootData();
+    // const response = await GetRootData();
+    const res = await fetch("/api/root", {
+      method: "POST",
+      headers: { "Content-Type": "application-json" },
+      body: JSON.stringify({}),
+    });
+    const response = await res.json();
 
     if (response && "data" in response && response.data) {
       setAccountDetails({
@@ -64,29 +56,37 @@ export default function AccountPage() {
   };
 
   const userEventData = async () => {
-    var response = await EventDataCount();
+    var res = await fetch("/api/role/list", {
+      method: "POST",
+      body: JSON.stringify({ count: "true" }),
+    });
+    const response = await res.json();
 
     if (response?.status == "success" && response?.data) {
       setEventData({
         ...eventData,
-        total_count: Number(response.data.total_count),
-        admin_count: Number(response.data.admin_count),
-        reporter_count: Number(response.data.reporter_count),
+        total_count: response.data.total_count,
       });
     }
   };
 
   const voiceFeedback = async () => {
-    var response = await VoiceFeedbackCount();
-
+    const res = await fetch("/api/reporter/data/get", {
+      method: "POST",
+      body: JSON.stringify({ count: "true" }),
+    });
+    const response = await res.json();
     if (response?.status == "success" && response?.data) {
       setVoiceCount(response.data.count);
     }
   };
 
   const voiceFeedbackReport = async () => {
-    var response = await VoiceFeedbackReportCount();
-
+    const res = await fetch("/api/reporter/report/get", {
+      method: "POST",
+      body: JSON.stringify({ count: "true" }),
+    });
+    const response = await res.json();
     if (response?.status == "success" && response?.data) {
       setVoiceReportCount(response.data.count);
     }
@@ -97,8 +97,7 @@ export default function AccountPage() {
     userEventData();
     voiceFeedback();
     voiceFeedbackReport();
-  },[]);
-
+  }, []);
 
   const startAccountEditing = () => {
     setIsEditing(true);
@@ -118,7 +117,11 @@ export default function AccountPage() {
         data[element] = accountDetails[element as keyof typeof accountDetails];
       }
     });
-    const response = await UpdateRootData(data);
+    const res = await fetch("/api/root", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    const response = await res.json();
     if (response?.status == "error") {
       setUserDataError(response.error?.response ?? "error in updating");
     } else {
@@ -174,7 +177,11 @@ export default function AccountPage() {
       return;
     }
 
-    const response = await UpdateRootData({ password: password.newPassword });
+    const res = await fetch("/api/root", {
+      method: "PUT",
+      body: JSON.stringify({ password: password.newPassword }),
+    });
+    const response = await res.json();
 
     if (response?.status == "success") {
       setPasswordError(
@@ -188,15 +195,20 @@ export default function AccountPage() {
   };
 
   const logout = async () => {
-    const response = await Logout();
+    const res = await fetch("/api/authentication/logout", { method: "DELETE" });
+    const response = await res.json();
+    console.log(response);
     if (response && response["status"] == "success") {
       router.push("/auth/signin?response=logout successfull");
     }
   };
 
   const closeAccount = async () => {
-    const response = await CloseRootAccount();
-    console.log(response);
+    // const response = await CloseRootAccount();
+    const res = await fetch("/api/root", {
+      method: "DELETE",
+    });
+    const response = await res.json();
     if (response && response["status"] == "success") {
       router.push("/auth/signin?response=root account closed");
     }
@@ -237,7 +249,7 @@ export default function AccountPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Number of Roles
+                  Number of Events
                 </CardTitle>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -258,10 +270,6 @@ export default function AccountPage() {
                 <div className="text-2xl font-bold">
                   {eventData.total_count}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Number of admins: {eventData.admin_count} and reporters:{" "}
-                  {eventData.reporter_count}
-                </p>
               </CardContent>
             </Card>
             <Card>
