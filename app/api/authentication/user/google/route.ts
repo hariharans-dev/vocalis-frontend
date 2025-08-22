@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { APIRequestOptions, fetchData } from "../../../FetchData";
-import { getToken, setToken } from "../../../Session";
+// import { getToken, setToken } from "../../../Session";
+import { cookies } from "next/headers";
 
 interface ApiResponse {
   data?: any;
@@ -24,13 +25,17 @@ export async function POST(req: Request) {
       body: JSON.stringify({ email }),
     };
     const response = await fetchData<ApiResponse>(path, options);
-    let res = NextResponse.json(response);
+    let res = NextResponse.json<ApiResponse>(response);
     if (response?.status == "success") {
-      setToken(
-        res,
-        "authToken",
-        JSON.stringify({ token: response.data?.token, role: "user" })
-      );
+      (await cookies()).set({
+        name: "authToken",
+        value: JSON.stringify({ token: response.data.token, role: "user" }),
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 60 * 60 * 24, // 1 day
+      });
     }
     return res;
   } catch (error) {
