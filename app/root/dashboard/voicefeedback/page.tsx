@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Mic, Pause, Play, Square } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { sendVoiceFeedback } from "@/app/api/voicefeedback/sendVoiceFeedback";
 import { getCookie } from "@/app/_functions/cookie";
 
 function RecordingPage() {
@@ -111,7 +109,11 @@ function RecordingPage() {
   };
 
   const sendAudioToBackend = async () => {
-    const cookie = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
     const formData = new FormData();
 
     if (audio) {
@@ -126,7 +128,10 @@ function RecordingPage() {
 
     if (cookie?.event) formData.append("event_name", String(cookie.event));
 
-    const response = await sendVoiceFeedback(formData);
+    await fetch("/api/reporter/data", {
+      method: "POST",
+      body: formData,
+    });
     handleDiscard();
   };
 
