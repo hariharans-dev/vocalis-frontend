@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { APIRequestOptions, fetchData } from "../../../FetchData";
-// import { getToken, setToken } from "../../../Session";
+import { APIRequestOptions, fetchData } from "../../FetchData";
 import { cookies } from "next/headers";
 
 interface ApiResponse {
@@ -12,32 +11,33 @@ interface ApiResponse {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const email = body?.email ?? null;
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const cookie = (await cookies()).get("authToken")?.value;
 
-    const path = `${backendUrl}/auth/root/google`;
+    if (!cookie) {
+      throw new Error("missing auth token");
+    }
+
+    const parsedCookie = JSON.parse(cookie) as { token: string; role?: string };
+    const token = parsedCookie.token;
+
+    if (!token) {
+      throw new Error("invalid auth token format");
+    }
+
+    const path = `${backendUrl}/audience/report`;
     const options: APIRequestOptions = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify(body),
+      
     };
     const response = await fetchData<ApiResponse>(path, options);
-    let res = NextResponse.json<ApiResponse>(response);
-    if (response?.status == "success") {
-      (await cookies()).set({
-        name: "authToken",
-        value: JSON.stringify({ token: response.data.token, role: "root" }),
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        path: "/",
-        maxAge: 60 * 60 * 24, // 1 day
-      });
-    }
-    return res;
+    return NextResponse.json<ApiResponse>(response);
   } catch (error) {
     return NextResponse.json({
       status: "error",
