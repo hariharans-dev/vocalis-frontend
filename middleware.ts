@@ -1,19 +1,23 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { APIRequestOptions, fetchData } from "./app/api/FetchData";
+import { getToken } from "./app/api/Session";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const cookie = request.cookies.get("authToken");
+  const cookie = await getToken("authToken");
 
-  let token: string | undefined;
-  let role: string | undefined;
+  var token: string | undefined;
+  var role: string | undefined;
 
   if (cookie) {
     try {
-      const parsedCookie = JSON.parse(cookie.value);
-      token = parsedCookie?.token;
-      role = parsedCookie?.role;
+      const onceParsed = JSON.parse(cookie);
+      const parsedCookie =
+        typeof onceParsed === "string" ? JSON.parse(onceParsed) : onceParsed;
+
+      token = String(parsedCookie.token);
+      role = String(parsedCookie.role);
     } catch (error) {
       return NextResponse.redirect(
         new URL("/auth/signin?response=invalid session", request.url)
@@ -24,7 +28,6 @@ export async function middleware(request: NextRequest) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!backendUrl) {
-    console.log("backendurl not found", backendUrl);
     return NextResponse.redirect(
       new URL("/auth/signin?response=backend unreachable", request.url)
     );
@@ -86,13 +89,14 @@ async function isSessionValid(
   }
 
   try {
-    const path = `${backendUrl}/auth`;
+    const path = `${backendUrl}/auth/get`;
     const options: APIRequestOptions = {
-      method: "GET",
+      method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     };
 
     const response = await fetchData<any>(path, options);
+    console.log("spotted");
 
     if (response?.status === "success") {
       return "valid";
