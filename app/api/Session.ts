@@ -1,14 +1,16 @@
+"use server";
+
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 /**
  * Set a cookie on the response with a given name and token object.
  */
-export const setToken = (
+export const setToken = async (
   res: NextResponse,
   name: string,
   token: any
-): NextResponse => {
+): Promise<NextResponse> => {
   const expireTimeInHours = process.env.NEXT_PUBLIC_SESSION_EXPIRE;
 
   if (!expireTimeInHours || !token) return res;
@@ -25,25 +27,29 @@ export const setToken = (
     maxAge,
   });
 
-  return res;
+  return Promise.resolve(res);
 };
 
 /**
  * Get a cookie value by name from the request context.
  */
-export const getToken = async (name: string): Promise<string> => {
+export const getToken = async (name: string): Promise<string | null> => {
   const cookieStore = cookies();
-  return (await cookieStore).get(name)?.value || "";
+  const value = (await cookieStore).get(name)?.value ?? null;
+  return Promise.resolve(value);
 };
 
 /**
  * Remove a cookie by setting maxAge to 0 on the response.
  */
-export const removeToken = (res: NextResponse, name: string): NextResponse => {
+export const removeToken = async (
+  res: NextResponse,
+  name: string
+): Promise<NextResponse> => {
   res.cookies.set(name, "", {
     maxAge: 0,
     path: "/",
   });
 
-  return res;
+  return Promise.resolve(res);
 };
