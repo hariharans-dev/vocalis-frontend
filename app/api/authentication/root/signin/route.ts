@@ -27,7 +27,11 @@ export async function POST(req: Request) {
     const response = await fetchData<ApiResponse>(path, options);
     let res = NextResponse.json(response);
     if (response?.status == "success") {
-      setToken(res, "authToken", response.data?.token);
+      setToken(
+        res,
+        "authToken",
+        JSON.stringify({ token: response.data?.token, role: "root" })
+      );
     }
     return res;
   } catch (error) {
