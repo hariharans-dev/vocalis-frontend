@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import Link from "next/link";
 import { useState } from "react";
-import ApiSignup from "@/app/api/auth/Signup";
 import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
@@ -24,8 +23,14 @@ export default function SignUpForm() {
 
     setIsLoading(true);
 
-    const response = await ApiSignup(email, password);
-    if (response.data) {
+    const res = await fetch("/api/authentication/root/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const response = await res.json();
+
+    if (response && response?.data) {
       setIsRedirecting(true);
       setTimeout(() => {
         router.push("/root/dashboard");
