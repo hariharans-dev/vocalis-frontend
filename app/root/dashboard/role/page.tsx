@@ -40,9 +40,7 @@ export default function EventPage() {
       ) {
         setBasicRoles(response.data.role_list);
       }
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    }
+    } catch (error) {}
   };
 
   // Fetch Event Roles
@@ -59,7 +57,6 @@ export default function EventPage() {
           body: JSON.stringify({ event_name: cookie.event }),
         });
         const response = await res.json();
-        console.log(response);
         if (response.status === "success" && Array.isArray(response.data)) {
           setRoleList(
             response.data.map(
@@ -71,9 +68,7 @@ export default function EventPage() {
           );
         }
       }
-    } catch (error) {
-      console.error("Error fetching event roles:", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -113,9 +108,7 @@ export default function EventPage() {
         );
         window.location.reload();
       }
-    } catch (error) {
-      console.error("Error creating role:", error);
-    }
+    } catch (error) {}
   };
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -269,7 +262,6 @@ export default function EventPage() {
                     <div
                       key={index}
                       onClick={() => {
-                        console.log("Selected:", item);
                         setIsDropdownOpen(false);
                       }}
                       className="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"

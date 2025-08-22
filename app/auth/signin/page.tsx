@@ -107,7 +107,6 @@ function SignInFormContent({ role }: { role: string }) {
         body: JSON.stringify({ email, password }),
         credentials: "include",
       });
-      console.log(res);
 
       const response = await res.json(); // 👈 parse JSON
 

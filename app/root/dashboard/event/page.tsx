@@ -92,7 +92,6 @@ export default function EventPage() {
       .find((r) => r.startsWith("eventToken="))
       ?.split("=")[1];
     const cookie = raw ? JSON.parse(atob(raw)) : null;
-    console.log(cookie);
 
     if (cookie && "event" in cookie && "role" in cookie) {
       setRole(String(cookie.role));
@@ -113,7 +112,7 @@ export default function EventPage() {
   useEffect(() => {
     EventRoleData();
     EventData();
-  });
+  },[]);
 
   const createEventFunc = async () => {
     if (newEvent.event_name == "") {

@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     const parsedCookie = JSON.parse(cookie) as { token: string; role?: string };
     const token = parsedCookie.token;
-    console.log(token);
+  
 
     if (!token) {
       throw new Error("invalid auth token format");
@@ -39,7 +39,6 @@ export async function POST(req: Request) {
     const response = await fetchData<ApiResponse>(path, options);
     return NextResponse.json<ApiResponse>(response);
   } catch (error: any) {
-    console.error("POST /root/get error:", error);
 
     let status = 500;
     let message = "internal server error";

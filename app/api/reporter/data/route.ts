@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     for (const [key, value] of formData.entries()) {
-      console.log(key, value);
+      
     }
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const cookie = (await cookies()).get("authToken")?.value;

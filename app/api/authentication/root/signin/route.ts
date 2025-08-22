@@ -50,9 +50,6 @@ export async function POST(req: Request) {
 
     return res;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Auth POST error:", error);
-    }
     return NextResponse.json<ApiResponse>(
       { status: "error", error: { response: "Internal server error" } },
       { status: 500 }

@@ -87,7 +87,7 @@ export default function AudienceFeedback() {
   useEffect(() => {
     getEndpointFunc();
     getAudienceDataFunc();
-  });
+  },[]);
 
   return (
     <div className="flex flex-col w-full">

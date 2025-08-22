@@ -11,7 +11,6 @@ interface ApiResponse {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log(body);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const cookie = (await cookies()).get("authToken")?.value;
 
@@ -37,10 +36,9 @@ export async function POST(req: Request) {
     };
 
     const response = await fetchData<ApiResponse>(path, options);
-    console.log(response);
+
     return NextResponse.json<ApiResponse>(response);
   } catch (error: any) {
-    console.error("POST /root/get error:", error);
 
     let status = 500;
     let message = "internal server error";
