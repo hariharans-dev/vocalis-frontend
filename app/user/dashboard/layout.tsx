@@ -55,7 +55,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const fetchCookie = async () => {
-      const cookie = await getCookie("event");
+      const raw = document.cookie
+        .split("; ")
+        .find((r) => r.startsWith("eventToken="))
+        ?.split("=")[1];
+      const cookie = raw ? JSON.parse(atob(raw)) : null;
       setRole(cookie?.role ?? null);
       console.log(cookie);
     };
