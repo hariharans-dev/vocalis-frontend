@@ -9,16 +9,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import ApiForgetPassword from "@/app/api/auth/ForgetPassword";
 
-export default function SignUpForm() {
+export default function Forgetpassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const role: string = searchParams?.get("role") || "root";
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -28,21 +26,51 @@ export default function SignUpForm() {
 
     setIsLoading(true);
 
-    const response: any = await ApiForgetPassword(email, role);
+    if (role == "root") {
+      const res = await fetch("/api/authentication/root/forgetpassword", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-    if (response?.data) {
-      setIsRedirecting(true);
-      setTimeout(() => {
-        router.push("/auth/signin?response=email sent");
-      }, 1000);
-    } else if (response != null) {
-      if (response.error) {
-        setResponse(response.error.response);
+      const response = await res.json();
+
+      if (response?.data) {
+        setIsRedirecting(true);
+        setTimeout(() => {
+          router.push("/auth/signin?response=email sent");
+        }, 1000);
+      } else if (response != null) {
+        if (response.error) {
+          setResponse(response.error.response);
+        }
+      } else {
+        setResponse("internal server error");
       }
+      setIsLoading(false);
     } else {
-      setResponse("internal server error");
+      const res = await fetch("/api/authentication/user/forgetpassword", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const response = await res.json();
+
+      if (response?.data) {
+        setIsRedirecting(true);
+        setTimeout(() => {
+          router.push("/auth/signin?response=email sent");
+        }, 1000);
+      } else if (response != null) {
+        if (response.error) {
+          setResponse(response.error.response);
+        }
+      } else {
+        setResponse("internal server error");
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -51,7 +79,7 @@ export default function SignUpForm() {
         <CardHeader className="text-center space-y-2">
           <h3 className="text-2xl font-semibold">Forget Password</h3>
           <p className="text-sm text-muted-foreground">
-            Reset your account password securely
+            Reset your {role} account password securely
           </p>
         </CardHeader>
         <CardContent>
