@@ -6,17 +6,16 @@ import { NextResponse } from "next/server";
 /**
  * Set a cookie on the response with a given name and token object.
  */
-export const setToken = async (
-  res: NextResponse,
+export const setToken = async <T>(
+  res: NextResponse<T>,
   name: string,
   token: any
-): Promise<NextResponse> => {
+): Promise<NextResponse<T>> => {
   const expireTimeInHours = process.env.NEXT_PUBLIC_SESSION_EXPIRE;
 
   if (!expireTimeInHours || !token) return res;
 
   const maxAge = parseInt(expireTimeInHours, 10) * 60 * 60;
-
   if (isNaN(maxAge)) return res;
 
   res.cookies.set(name, JSON.stringify(token), {
@@ -27,7 +26,7 @@ export const setToken = async (
     maxAge,
   });
 
-  return Promise.resolve(res);
+  return res;
 };
 
 /**
@@ -35,21 +34,19 @@ export const setToken = async (
  */
 export const getToken = async (name: string): Promise<string | null> => {
   const cookieStore = cookies();
-  const value = (await cookieStore).get(name)?.value ?? null;
-  return Promise.resolve(value);
+  return (await cookieStore).get(name)?.value ?? null;
 };
 
 /**
  * Remove a cookie by setting maxAge to 0 on the response.
  */
-export const removeToken = async (
-  res: NextResponse,
+export const removeToken = async <T>(
+  res: NextResponse<T>,
   name: string
-): Promise<NextResponse> => {
+): Promise<NextResponse<T>> => {
   res.cookies.set(name, "", {
     maxAge: 0,
     path: "/",
   });
-
-  return Promise.resolve(res);
+  return res;
 };

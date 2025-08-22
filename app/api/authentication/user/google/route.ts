@@ -24,9 +24,9 @@ export async function POST(req: Request) {
       body: JSON.stringify({ email }),
     };
     const response = await fetchData<ApiResponse>(path, options);
-    let res = NextResponse.json(response);
+    let res = NextResponse.json<ApiResponse>(response);
     if (response?.status == "success") {
-      setToken(
+      res = await setToken(
         res,
         "authToken",
         JSON.stringify({ token: response.data?.token, role: "user" })

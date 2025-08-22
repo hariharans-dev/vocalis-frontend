@@ -25,9 +25,12 @@ export async function POST(req: Request) {
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);
-    var res = NextResponse.json(response);
+    var res = NextResponse.json<ApiResponse>(response);
     if (response.status == "success") {
-      setToken(res, "authToken", { token: response.data?.token, role: "root" });
+      res = await setToken(res, "authToken", {
+        token: response.data?.token,
+        role: "root",
+      });
     }
     return res;
   } catch (error) {

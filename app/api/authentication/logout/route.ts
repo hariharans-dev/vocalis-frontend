@@ -23,8 +23,8 @@ export async function DELETE(req: Request) {
   };
   try {
     const response = await fetchData<ApiResponse>(path, options);
-    const res = NextResponse.json(response);
-    removeToken(res, "authToken");
+    var res = NextResponse.json<ApiResponse>(response);
+    res = await removeToken(res, "authToken");
     return res;
   } catch (error) {
     return NextResponse.json({
