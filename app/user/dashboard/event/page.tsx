@@ -2,23 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SearchBar } from "@/components/search-bar";
-import {
-  getEventData,
-  getEventRole,
-  updateEventData,
-} from "@/app/api/event/EventData";
 import { createCookie, getCookie } from "@/app/_functions/cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-// import {} from "@/app/api/user/account/EventData";
 
 export default function EventPage() {
   interface SearchItem {
@@ -65,7 +54,11 @@ export default function EventPage() {
     : searchItems;
 
   const EventRoleData = async () => {
-    const response = await getEventRole();
+    const res = await fetch("/api/role/list", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    const response = await res.json();
     if (response && response.data) {
       const eventRoleMap: Record<
         string,
@@ -87,22 +80,29 @@ export default function EventPage() {
         }
       });
 
-      // Convert object to array and update state
       setSearchItems(
         Object.values(eventRoleMap).map((item) => ({
           ...item,
-          role: item.roles.join(", "), // Join multiple roles with a comma
+          role: item.roles.join(", "),
         }))
       );
     }
   };
 
   const EventData = async () => {
-    const cookie: Object = await getCookie("event");
+    const raw = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("eventToken="))
+      ?.split("=")[1];
+    const cookie = raw ? JSON.parse(atob(raw)) : null;
 
     if (cookie && "event" in cookie && "role" in cookie) {
       setRole(String(cookie.role));
-      var response = await getEventData(String(cookie.event));
+      const res = await fetch("/api/event/get", {
+        method: "POST",
+        body: JSON.stringify({ event_name: cookie.event }),
+      });
+      const response = await res.json();
       if (response?.data) {
         setCurrentEventData({
           ...currentEventData,
@@ -115,14 +115,23 @@ export default function EventPage() {
   useEffect(() => {
     EventRoleData();
     EventData();
-  },[]);
-
+  }, []);
 
   const handleEventSelected = (item: any) => {
-    if (item.role == "admin, reporter") {
-      createCookie("event", { event: item.label, role: "admin" });
+    if (item.role.includes("admin")) {
+      const cookieValue = btoa(
+        JSON.stringify({ event: item.label, role: "admin" })
+      );
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 1);
+      document.cookie = `eventToken=${cookieValue}; path=/; expires=${expires.toUTCString()}; secure; samesite=strict`;
     } else {
-      createCookie("event", { event: item.label, role: item.role });
+      const cookieValue = btoa(
+        JSON.stringify({ event: item.label, role: item.role })
+      );
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 1);
+      document.cookie = `eventToken=${cookieValue}; path=/; expires=${expires.toUTCString()}; secure; samesite=strict`;
     }
 
     window.location.reload();
@@ -145,7 +154,12 @@ export default function EventPage() {
     };
     delete data.event_detail;
 
-    const response = await updateEventData(data);
+    // const response = await updateEventData(data);
+    const res = await fetch("/api/event", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    const response = await res.json();
     if (response?.status == "error") {
       setUserDataError(response.error?.response ?? "error in updating");
     } else {
