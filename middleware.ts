@@ -8,10 +8,6 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   // const cookie = await getToken("authToken");
   const cookie = (await cookies()).get("authToken")?.value;
-<<<<<<< HEAD
-=======
-  console.log(cookie);
->>>>>>> 001674ebf36acb79c1dd6a55036c1d8d3fd07491
 
   var token: string | undefined;
   var role: string | undefined;
