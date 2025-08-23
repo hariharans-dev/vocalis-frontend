@@ -1,7 +1,6 @@
 import { FeatureGrid } from "@/components/features";
 import { Hero } from "@/components/hero";
 import { PricingGrid } from "@/components/pricing";
-// import { stackServerApp } from "@/stack";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import {
   Activity,
@@ -16,14 +15,14 @@ export default async function IndexPage() {
   return (
     <>
       <Hero
-        capsuleText="one time solution for event management"
-        capsuleLink="https://stacktemplate.com"
-        title="Vocalis - Event Feedback Manager"
-        subtitle="Built for developers, by developers. Next.js + Shadcn UI + Stack Auth."
-        primaryCtaText="Get Started"
-        primaryCtaLink={""}
-        secondaryCtaText="Documentation"
-        secondaryCtaLink=""
+        capsuleText="Your all-in-one event feedback platform"
+        capsuleLink="#features"
+        title="Vocalis – Real-time Event Feedback Manager"
+        subtitle="Transform voice and text feedback into actionable insights. Powered by AI, built for organizers who care about customer experience."
+        primaryCtaText="Get Started Free"
+        primaryCtaLink="#pricing"
+        secondaryCtaText="View on GitHub"
+        secondaryCtaLink="https://github.com/hariharans-dev"
         credits={
           <>
             Crafted with ❤️ by{" "}
@@ -41,95 +40,94 @@ export default async function IndexPage() {
 
       <div id="features" />
       <FeatureGrid
-        title="Key Features"
+        title="Why Choose Vocalis?"
         subtitle="Empowering event organizers with AI-driven voice & text feedback management."
         items={[
           {
             icon: <Mic className="h-12 w-12" />,
             title: "AI-Powered Voice Transcription",
             description:
-              "Capture and transcribe event feedback in real-time using OpenAI Whisper.",
+              "Capture reporter feedback instantly with accurate speech-to-text technology.",
           },
           {
             icon: <MessageSquareText className="h-12 w-12" />,
             title: "Text Feedback Analysis",
             description:
-              "Extract insights from attendee feedback with NLP-based sentiment analysis.",
+              "Discover audience sentiment and key topics with advanced NLP algorithms.",
           },
           {
             icon: <Activity className="h-12 w-12" />,
-            title: "Real-time Event Insights",
+            title: "Real-time Insights",
             description:
-              "Get instant metrics on audience sentiment and engagement trends.",
+              "Live dashboards that track sentiment, engagement, and issues as they happen.",
           },
           {
             icon: <Users className="h-12 w-12" />,
-            title: "Multi-Tenancy & Access Control",
+            title: "Multi-Tenant & Secure",
             description:
-              "Enable event-specific feedback management with Role-Based Access Control (RBAC).",
+              "Role-based access control for teams and organizations running multiple events.",
           },
           {
             icon: <Database className="h-12 w-12" />,
-            title: "Redis & MySQL",
+            title: "Scalable Infrastructure",
             description:
-              "Efficient message queuing and data storage for large-scale events.",
+              "Optimized with Redis & MySQL to handle large-scale, high-volume events seamlessly.",
           },
           {
             icon: <ComponentIcon className="h-12 w-12" />,
-            title: "Modular & Customizable",
+            title: "Customizable & Modular",
             description:
-              "Easily extend and adapt to various event types and audience needs.",
+              "Adapt Vocalis to fit conferences, concerts, expos, or any audience-driven event.",
           },
         ]}
       />
 
       <div id="pricing" />
       <PricingGrid
-        title="Pricing"
-        subtitle="Flexible plans for every team."
+        title="Simple, Transparent Pricing"
+        subtitle="Start free, scale as your events grow."
         items={[
           {
-            title: "Basic",
+            title: "Starter",
             price: "Free",
-            description: "For individuals and small projects.",
+            description: "Perfect for individuals and small community events.",
             features: [
-              "Full source code",
-              "100% Open-source",
+              "Unlimited text feedback",
+              "Up to 50 voice transcriptions/month",
+              "Basic sentiment analysis",
               "Community support",
-              "Free forever",
-              "No credit card required",
             ],
-            buttonText: "Get Started",
-            buttonHref: "https://google.com",
+            buttonText: "Get Started Free",
+            buttonHref: "#",
           },
           {
             title: "Pro",
-            price: "$0.00",
-            description: "Ideal for growing teams and businesses.",
+            price: "$29/mo",
+            description:
+              "Best for professional event organizers and growing teams.",
             features: [
-              "Full source code",
-              "100% Open-source",
-              "Community support",
-              "Free forever",
-              "No credit card required",
+              "Unlimited text & voice feedback",
+              "Advanced sentiment & trend analysis",
+              "Custom dashboards & exports",
+              "Priority email support",
             ],
             buttonText: "Upgrade to Pro",
             isPopular: true,
-            buttonHref: "https://google.com",
+            buttonHref: "#",
           },
           {
             title: "Enterprise",
-            price: "Still Free",
-            description: "For large organizations.",
+            price: "Custom",
+            description:
+              "Tailored solutions for large organizations and high-scale events.",
             features: [
-              "Full source code",
-              "100% Open-source",
-              "Community support",
-              "Free forever",
-              "No credit card required",
+              "Dedicated infrastructure",
+              "On-premise deployment options",
+              "Custom integrations (API, SSO, CRM)",
+              "24/7 premium support",
             ],
-            buttonText: "Contact Us",
-            buttonHref: "https://google.com",
+            buttonText: "Contact Sales",
+            buttonHref: "#",
           },
         ]}
       />

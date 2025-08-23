@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { APIRequestOptions, fetchData } from "./app/api/FetchData";
-// import { getToken } from "./app/api/Session";
 import { cookies } from "next/headers";
 
 export async function middleware(request: NextRequest) {
