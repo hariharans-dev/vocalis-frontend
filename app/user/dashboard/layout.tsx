@@ -14,7 +14,7 @@ const navigationItemsAdmin: SidebarItem[] = [
   { type: "label", name: "Event" },
   { name: "Event", href: "/event", icon: Calendar, type: "item" },
   { type: "label", name: "Live Event" },
-  { name: "Voice Feedback", href: "/voicefeedback", icon: Mic, type: "item" },
+  // { name: "Voice Feedback", href: "/voicefeedback", icon: Mic, type: "item" },
   {
     name: "Audience Feedback",
     href: "/audiencefeedback",
@@ -22,7 +22,7 @@ const navigationItemsAdmin: SidebarItem[] = [
     type: "item",
   },
   { type: "label", name: "Feedback Report" },
-  { name: "Voice Report", href: "/voicereport", icon: Mic, type: "item" },
+  // { name: "Voice Report", href: "/voicereport", icon: Mic, type: "item" },
   {
     name: "Audience Report",
     href: "/audiencereport",
@@ -38,7 +38,7 @@ const navigationItemsReporter: SidebarItem[] = [
   { type: "label", name: "Event" },
   { name: "Event", href: "/event", icon: Calendar, type: "item" },
   { type: "label", name: "Live Event" },
-  { name: "Voice Feedback", href: "/voicefeedback", icon: Mic, type: "item" },
+  // { name: "Voice Feedback", href: "/voicefeedback", icon: Mic, type: "item" },
   { type: "label", name: "Account" },
   { name: "Account", href: "/account", icon: Settings2, type: "item" },
 ];
