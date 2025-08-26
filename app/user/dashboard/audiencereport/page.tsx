@@ -15,38 +15,26 @@ import { Label } from "@radix-ui/react-label";
 
 export default function AudienceReport() {
   interface GeneratedAudienceReportData {
-    general_opinion?: {
-      opinion: string;
-      total_feedbacks: number;
-      negative_feedbacks: number;
-      positive_feedbacks: number;
-      negative_percentage: number;
-      positive_percentage: number;
-    } | null;
-    summary?: {
-      negative_summary: string;
-      positive_summary: string;
-    } | null;
-    overall_summary?: string | null;
+    total_feedbacks: number;
+    positive_feedbacks: number;
+    negative_feedbacks: number;
+    positive_summary: string | null;
+    negative_summary: string | null;
+    general_opinion: string | null;
+    overall_summary: string | null;
   }
   interface AudienceReportData {
     map(
       arg0: (report: any, index: number) => JSX.Element
     ): import("react").ReactNode;
     length: number;
-    general_opinion?: {
-      opinion: string;
-      total_feedbacks: number;
-      negative_feedbacks: number;
-      positive_feedbacks: number;
-      negative_percentage: number;
-      positive_percentage: number;
-    } | null;
-    summary?: {
-      negative_summary: string;
-      positive_summary: string;
-    } | null;
-    overall_summary?: string | null;
+    total_feedbacks: number;
+    positive_feedbacks: number;
+    negative_feedbacks: number;
+    positive_summary: string | null;
+    negative_summary: string | null;
+    general_opinion: string | null;
+    overall_summary: string | null;
   }
 
   const [selectedMinutes, setSelectedMinutes] = useState<string>("1");
@@ -55,7 +43,15 @@ export default function AudienceReport() {
     AudienceReportData[] | null
   >(null);
   const [generatedAudienceReportData, setGeneratedAudienceReportData] =
-    useState<GeneratedAudienceReportData>({});
+    useState<GeneratedAudienceReportData>({
+      total_feedbacks: 0,
+      positive_feedbacks: 0,
+      negative_feedbacks: 0,
+      positive_summary: null,
+      negative_summary: null,
+      general_opinion: null,
+      overall_summary: null,
+    });
   const [showVoiceData, setShowVoiceData] = useState(false);
   const [voiceFeedbackResponseData, setVoiceFeedbackResponseData] =
     useState("");
@@ -195,29 +191,38 @@ export default function AudienceReport() {
             <CardContent className="space-y-2 text-sm">
               <p>
                 <strong>General Opinion:</strong>{" "}
-                {generatedAudienceReportData.general_opinion?.opinion ??
-                  "Generating..."}
+                {generatedAudienceReportData.general_opinion ?? "Generating..."}
               </p>
               <p>
                 <strong>Positive:</strong>{" "}
-                {generatedAudienceReportData.general_opinion
-                  ?.positive_percentage ?? "Generating..."}
+                {generatedAudienceReportData.total_feedbacks
+                  ? (
+                      (generatedAudienceReportData.positive_feedbacks /
+                        generatedAudienceReportData.total_feedbacks) *
+                      100
+                    ).toFixed(1)
+                  : "0"}
                 %
               </p>
               <p>
                 <strong>Negative:</strong>{" "}
-                {generatedAudienceReportData.general_opinion
-                  ?.negative_percentage ?? "Generating..."}
+                {generatedAudienceReportData.total_feedbacks
+                  ? (
+                      (generatedAudienceReportData.negative_feedbacks /
+                        generatedAudienceReportData.total_feedbacks) *
+                      100
+                    ).toFixed(1)
+                  : "0"}
                 %
               </p>
               <p>
                 <strong>Positive Summary:</strong>{" "}
-                {generatedAudienceReportData.summary?.positive_summary ??
+                {generatedAudienceReportData.positive_summary ??
                   "Generating..."}
               </p>
               <p>
                 <strong>Negative Summary:</strong>{" "}
-                {generatedAudienceReportData.summary?.negative_summary ??
+                {generatedAudienceReportData.negative_summary ??
                   "Generating..."}
               </p>
               <p>
@@ -249,45 +254,57 @@ export default function AudienceReport() {
 
           {Array.isArray(AudienceReportData) &&
           AudienceReportData.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid gap-4">
               {AudienceReportData.map(
-                (report: AudienceReportData, index: number) => (
-                  <Card key={index} className="p-4 shadow-md">
-                    <CardHeader>
-                      <h3 className="text-lg font-bold">Report {index + 1}</h3>
-                    </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
-                      <p>
-                        <strong>General Opinion:</strong>{" "}
-                        {report.general_opinion?.opinion ?? "Generating..."}
-                      </p>
-                      <p>
-                        <strong>Positive:</strong>{" "}
-                        {report.general_opinion?.positive_percentage ??
-                          "Generating..."}
-                        %
-                      </p>
-                      <p>
-                        <strong>Negative:</strong>{" "}
-                        {report.general_opinion?.negative_percentage ??
-                          "Generating..."}
-                        %
-                      </p>
-                      <p>
-                        <strong>Positive Summary:</strong>{" "}
-                        {report.summary?.positive_summary ?? "Generating..."}
-                      </p>
-                      <p>
-                        <strong>Negative Summary:</strong>{" "}
-                        {report.summary?.negative_summary ?? "Generating..."}
-                      </p>
-                      <p>
-                        <strong>Overall Summary:</strong>{" "}
-                        {report.overall_summary ?? "Generating..."}
-                      </p>
-                    </CardContent>
-                  </Card>
-                )
+                (report: AudienceReportData, index: number) => {
+                  // calculate percentages
+                  const posPercent = report.total_feedbacks
+                    ? (
+                        (report.positive_feedbacks / report.total_feedbacks) *
+                        100
+                      ).toFixed(1)
+                    : "0";
+                  const negPercent = report.total_feedbacks
+                    ? (
+                        (report.negative_feedbacks / report.total_feedbacks) *
+                        100
+                      ).toFixed(1)
+                    : "0";
+
+                  return (
+                    <Card key={index} className="p-4 shadow-md">
+                      <CardHeader>
+                        <h3 className="text-lg font-bold">
+                          Report {index + 1}
+                        </h3>
+                      </CardHeader>
+                      <CardContent className="space-y-2 text-sm">
+                        <p>
+                          <strong>General Opinion:</strong>{" "}
+                          {report.general_opinion ?? "Generating..."}
+                        </p>
+                        <p>
+                          <strong>Positive:</strong> {posPercent}%
+                        </p>
+                        <p>
+                          <strong>Negative:</strong> {negPercent}%
+                        </p>
+                        <p>
+                          <strong>Positive Summary:</strong>{" "}
+                          {report.positive_summary ?? "Generating..."}
+                        </p>
+                        <p>
+                          <strong>Negative Summary:</strong>{" "}
+                          {report.negative_summary ?? "Generating..."}
+                        </p>
+                        <p>
+                          <strong>Overall Summary:</strong>{" "}
+                          {report.overall_summary ?? "Generating..."}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  );
+                }
               )}
             </div>
           ) : (
