@@ -113,5 +113,5 @@ async function isSessionValid(
 
 // Exclude API, authentication, and static assets from middleware
 export const config = {
-  matcher: ["/((?!api|auth|_next|static|public|favicon.ico|$).*)"],
+  matcher: ["/root/:path*", "/user/:path*"],
 };
