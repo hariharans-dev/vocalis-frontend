@@ -86,7 +86,7 @@ export default function AudienceFeedback() {
   useEffect(() => {
     getEndpointFunc();
     getAudienceDataFunc();
-  },[]);
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -96,10 +96,12 @@ export default function AudienceFeedback() {
             <span>Event Endpoint:</span>
             <span className="text-sm font-light break-words w-full sm:w-auto text-center sm:text-left">
               <Link
-                href={`${frontendUrl}/audience?endpoint=${endpoint}`}
+                href={`/audience?endpoint=${endpoint}`}
                 className="text-blue-600 hover:underline inline-block"
               >
-                {`${frontendUrl}/audience?endpoint=${endpoint}`}
+                {`${
+                  typeof window !== "undefined" ? window.location.origin : ""
+                }/audience?endpoint=${endpoint}`}
               </Link>
             </span>
           </div>
