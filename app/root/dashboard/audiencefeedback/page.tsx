@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 import Link from "next/link";
+import { QRCodeCanvas } from "qrcode.react";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function AudienceFeedback() {
@@ -92,18 +94,32 @@ export default function AudienceFeedback() {
     <div className="flex flex-col w-full">
       <div className="flex-1 space-y-4 p-4 sm:p-8 pt-6">
         {endpoint && endpoint !== "null" ? (
-          <div className="text-lg font-bold flex flex-wrap items-center justify-center sm:justify-start text-center sm:text-left gap-2">
-            <span>Event Endpoint:</span>
-            <span className="text-sm font-light break-words w-full sm:w-auto text-center sm:text-left">
-              <Link
-                href={`/audience?endpoint=${endpoint}`}
-                className="text-blue-600 hover:underline inline-block"
-              >
-                {`${
-                  typeof window !== "undefined" ? window.location.origin : ""
-                }/audience?endpoint=${endpoint}`}
-              </Link>
-            </span>
+          <div>
+            {" "}
+            <div className="text-lg font-bold flex flex-wrap items-center justify-center sm:justify-start text-center sm:text-left gap-2">
+              <span>Event Endpoint:</span>
+              <span className="text-sm font-light break-words w-full sm:w-auto text-center sm:text-left">
+                <Link
+                  href={`/audience?endpoint=${endpoint}`}
+                  className="text-blue-600 hover:underline inline-block"
+                >
+                  {`${
+                    typeof window !== "undefined" ? window.location.origin : ""
+                  }/audience?endpoint=${endpoint}`}
+                </Link>
+              </span>
+            </div>
+            <div className="p-4 border rounded-lg inline-block">
+              <QRCodeCanvas
+                value={
+                  typeof window !== "undefined"
+                    ? `${window.location.origin}/audience?endpoint=${endpoint}`
+                    : ""
+                }
+                size={128}
+                includeMargin={true} // adds quiet zone, makes scanning easier
+              />
+            </div>
           </div>
         ) : (
           <div className="text-lg font-bold flex flex-wrap items-center justify-center sm:justify-start gap-2">
