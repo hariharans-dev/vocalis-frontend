@@ -96,6 +96,8 @@ export default function AudienceReport() {
       const response = await res.json();
       if (response?.data?.response && UserData) {
         setVoiceFeedbackResponseData(String(response.data.response));
+      } else if (response?.error?.response) {
+        setVoiceFeedbackResponseData("no subscription");
       }
     }
   };
@@ -116,7 +118,6 @@ export default function AudienceReport() {
         body: JSON.stringify(data),
       });
       const response = await res.json();
-      console.log(response);
       if (
         response?.status === "success" &&
         Array.isArray(response.data) &&
@@ -140,102 +141,125 @@ export default function AudienceReport() {
 
   return (
     <div className="flex flex-col w-full p-4 sm:p-6 lg:p-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center gap-4">
-        <h1 className="text-lg sm:text-xl font-bold">
-          Create Audience Feedback Report
-        </h1>
-        <Button onClick={() => createAudienceReportFunc()}>Create</Button>
-      </div>
-
-      {voiceFeedbackResponseData && (
-        <p className="text-red-500 text-sm">{voiceFeedbackResponseData}</p>
-      )}
-
-      {/* Refresh Interval Selector */}
-      <div className="flex flex-wrap items-center gap-4">
-        <Label htmlFor="minutes" className="text-lg font-semibold">
-          Select Refresh Interval:
-        </Label>
-        <Select onValueChange={setSelectedMinutes} value={selectedMinutes}>
-          <SelectTrigger className="w-24">
-            <SelectValue placeholder="Min" />
-          </SelectTrigger>
-          <SelectContent className="max-h-40 overflow-y-auto p-1">
-            {Array.from({ length: 60 }, (_, i) => (
-              <SelectItem
-                key={i + 1}
-                value={(i + 1).toString()}
-                className="p-2 text-sm"
-              >
-                {i + 1} min
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-4">
-        <Button onClick={startGenerating} disabled={generating}>
-          Start
-        </Button>
-        <Button onClick={stopGenerating} disabled={!generating}>
-          Stop
-        </Button>
-        <Button onClick={() => getAudienceReportFunc(1)} disabled={!generating}>
-          Refresh
-        </Button>
-      </div>
-
-      {generating && (
-        <div className="flex justify-center w-full">
-          <Card className="w-full max-w-screen-sm p-4 shadow-md">
-            <CardContent className="space-y-2 text-sm">
-              <p>
-                <strong>General Opinion:</strong>{" "}
-                {generatedAudienceReportData.general_opinion ?? "Generating..."}
-              </p>
-              <p>
-                <strong>Positive:</strong>{" "}
-                {generatedAudienceReportData.total_feedbacks
-                  ? (
-                      (generatedAudienceReportData.positive_feedbacks /
-                        generatedAudienceReportData.total_feedbacks) *
-                      100
-                    ).toFixed(1)
-                  : "0"}
-                %
-              </p>
-              <p>
-                <strong>Negative:</strong>{" "}
-                {generatedAudienceReportData.total_feedbacks
-                  ? (
-                      (generatedAudienceReportData.negative_feedbacks /
-                        generatedAudienceReportData.total_feedbacks) *
-                      100
-                    ).toFixed(1)
-                  : "0"}
-                %
-              </p>
-              <p>
-                <strong>Positive Summary:</strong>{" "}
-                {generatedAudienceReportData.positive_summary ??
-                  "Generating..."}
-              </p>
-              <p>
-                <strong>Negative Summary:</strong>{" "}
-                {generatedAudienceReportData.negative_summary ??
-                  "Generating..."}
-              </p>
-              <p>
-                <strong>Overall Summary:</strong>{" "}
-                {generatedAudienceReportData.overall_summary ?? "Generating..."}
-              </p>
-            </CardContent>
-          </Card>
+      {/* --- if no subscription --- */}
+      {voiceFeedbackResponseData === "no subscription" ? (
+        <div className="flex flex-col items-center justify-center space-y-4 p-6 border rounded-xl shadow-md">
+          <p className="text-lg font-semibold text-gray-700">
+            You need a subscription to generate new Audience Reports.
+          </p>
+          <Button
+            className="px-6 py-2"
+            onClick={() => (window.location.href = "/root/subscribe")}
+          >
+            Subscribe Now
+          </Button>
         </div>
+      ) : (
+        <>
+          {/* Header */}
+          <div className="flex flex-wrap items-center gap-4">
+            <h1 className="text-lg sm:text-xl font-bold">
+              Create Audience Feedback Report
+            </h1>
+            <Button onClick={() => createAudienceReportFunc()}>Create</Button>
+          </div>
+
+          {voiceFeedbackResponseData && (
+            <p className="text-red-500 text-sm">{voiceFeedbackResponseData}</p>
+          )}
+
+          {/* Refresh Interval Selector */}
+          <div className="flex flex-wrap items-center gap-4">
+            <Label htmlFor="minutes" className="text-lg font-semibold">
+              Select Refresh Interval:
+            </Label>
+            <Select onValueChange={setSelectedMinutes} value={selectedMinutes}>
+              <SelectTrigger className="w-24">
+                <SelectValue placeholder="Min" />
+              </SelectTrigger>
+              <SelectContent className="max-h-40 overflow-y-auto p-1">
+                {Array.from({ length: 60 }, (_, i) => (
+                  <SelectItem
+                    key={i + 1}
+                    value={(i + 1).toString()}
+                    className="p-2 text-sm"
+                  >
+                    {i + 1} min
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <Button onClick={startGenerating} disabled={generating}>
+              Start
+            </Button>
+            <Button onClick={stopGenerating} disabled={!generating}>
+              Stop
+            </Button>
+            <Button
+              onClick={() => getAudienceReportFunc(1)}
+              disabled={!generating}
+            >
+              Refresh
+            </Button>
+          </div>
+
+          {generating && (
+            <div className="flex justify-center w-full">
+              <Card className="w-full max-w-screen-sm p-4 shadow-md">
+                <CardContent className="space-y-2 text-sm">
+                  <p>
+                    <strong>General Opinion:</strong>{" "}
+                    {generatedAudienceReportData.general_opinion ??
+                      "Generating..."}
+                  </p>
+                  <p>
+                    <strong>Positive:</strong>{" "}
+                    {generatedAudienceReportData.total_feedbacks
+                      ? (
+                          (generatedAudienceReportData.positive_feedbacks /
+                            generatedAudienceReportData.total_feedbacks) *
+                          100
+                        ).toFixed(1)
+                      : "0"}
+                    %
+                  </p>
+                  <p>
+                    <strong>Negative:</strong>{" "}
+                    {generatedAudienceReportData.total_feedbacks
+                      ? (
+                          (generatedAudienceReportData.negative_feedbacks /
+                            generatedAudienceReportData.total_feedbacks) *
+                          100
+                        ).toFixed(1)
+                      : "0"}
+                    %
+                  </p>
+                  <p>
+                    <strong>Positive Summary:</strong>{" "}
+                    {generatedAudienceReportData.positive_summary ??
+                      "Generating..."}
+                  </p>
+                  <p>
+                    <strong>Negative Summary:</strong>{" "}
+                    {generatedAudienceReportData.negative_summary ??
+                      "Generating..."}
+                  </p>
+                  <p>
+                    <strong>Overall Summary:</strong>{" "}
+                    {generatedAudienceReportData.overall_summary ??
+                      "Generating..."}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </>
       )}
 
+      {/* --- always show reports section --- */}
       <Button
         className="w-[80%] sm:w-auto sm:px-4 py-2 mt-2 sm:mt-0"
         onClick={() => setShowVoiceData(!showVoiceData)}
@@ -256,7 +280,6 @@ export default function AudienceReport() {
             <div className="grid gap-4">
               {AudienceReportData.map(
                 (report: AudienceReportData, index: number) => {
-                  // calculate percentages
                   const posPercent = report.total_feedbacks
                     ? (
                         (report.positive_feedbacks / report.total_feedbacks) *
