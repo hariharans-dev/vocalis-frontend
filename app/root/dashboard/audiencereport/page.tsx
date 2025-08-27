@@ -141,7 +141,6 @@ export default function AudienceReport() {
 
   return (
     <div className="flex flex-col w-full p-4 sm:p-6 lg:p-8 space-y-6">
-      {/* --- if no subscription --- */}
       {voiceFeedbackResponseData === "no subscription" ? (
         <div className="flex flex-col items-center justify-center space-y-4 p-6 border rounded-xl shadow-md">
           <p className="text-lg font-semibold text-gray-700">
@@ -149,7 +148,7 @@ export default function AudienceReport() {
           </p>
           <Button
             className="px-6 py-2"
-            onClick={() => (window.location.href = "/root/subscribe")}
+            onClick={() => (window.location.href = "/root/dashboard/subscription")}
           >
             Subscribe Now
           </Button>
