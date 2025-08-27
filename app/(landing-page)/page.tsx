@@ -20,9 +20,9 @@ export default async function IndexPage() {
         title="Vocalis – Real-time Event Feedback Manager"
         subtitle="Transform voice and text feedback into actionable insights. Powered by AI, built for organizers who care about customer experience."
         primaryCtaText="Get Started Free"
-        primaryCtaLink="#pricing"
+        primaryCtaLink="/getStarted"
         secondaryCtaText="View on GitHub"
-        secondaryCtaLink="https://github.com/hariharans-dev"
+        secondaryCtaLink="https://github.com/hariharans-dev/vocalis-frontend"
         credits={
           <>
             Crafted with ❤️ by{" "}
