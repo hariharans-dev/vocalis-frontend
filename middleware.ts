@@ -1,25 +1,25 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { APIRequestOptions, fetchData } from "./app/api/FetchData";
 import { cookies } from "next/headers";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const cookie = (await cookies()).get("authToken")?.value;
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get("authToken")?.value;
 
-  var token: string | undefined;
-  var role: string | undefined;
+  let token: string | undefined;
+  let role: string | undefined;
 
   if (cookie) {
     try {
-      const onceParsed = JSON.parse(cookie);
       const parsedCookie =
-        typeof onceParsed === "string" ? JSON.parse(onceParsed) : onceParsed;
+        typeof cookie === "string" ? JSON.parse(cookie) : cookie;
 
       token = String(parsedCookie.token);
       role = String(parsedCookie.role);
     } catch (error) {
-      (await cookies()).delete("eventToken");
+      cookieStore.delete("authToken");
       return NextResponse.redirect(
         new URL("/auth/signin?response=invalid session", request.url)
       );
@@ -27,58 +27,52 @@ export async function middleware(request: NextRequest) {
   }
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
   if (!backendUrl) {
-    (await cookies()).delete("eventToken");
+    cookieStore.delete("authToken");
     return NextResponse.redirect(
       new URL("/auth/signin?response=backend unreachable", request.url)
     );
   }
 
-  let sessionCheck: "valid" | "invalid" | "backend_error" = "invalid";
-
+  let sessionCheck: "valid" | "invalid" | "backend_error";
   try {
     sessionCheck = await isSessionValid(token, backendUrl);
-  } catch (error) {
-    (await cookies()).delete("eventToken");
+  } catch {
+    cookieStore.delete("authToken");
     return NextResponse.redirect(
       new URL("/auth/signin?response=backend unreachable", request.url)
     );
   }
 
-  if (sessionCheck === "backend_error") {
-    (await cookies()).delete("eventToken");
+  if (sessionCheck !== "valid") {
+    cookieStore.delete("authToken");
+
+    // 🔑 Special case: appadmin dashboard goes to /appadmin/signin
+    if (pathname.startsWith("/appadmin/dashboard")) {
+      return NextResponse.redirect(new URL("/appadmin/signin", request.url));
+    }
+
+    const reason =
+      sessionCheck === "backend_error"
+        ? "backend unreachable"
+        : "session expired";
     return NextResponse.redirect(
-      new URL("/auth/signin?response=backend unreachable", request.url)
+      new URL(`/auth/signin?response=${reason}`, request.url)
     );
   }
 
-  const sessionActive = sessionCheck === "valid";
+  // 🔑 Role-based route protection
+  const DASHBOARD_PATHS: Record<string, string> = {
+    root: "/root/dashboard",
+    user: "/user/dashboard",
+    appadmin: "/appadmin/dashboard",
+  };
 
-  if (!sessionActive) {
-    (await cookies()).delete("eventToken");
-    return NextResponse.redirect(
-      new URL("/auth/signin?response=session expired", request.url)
-    );
-  }
-
-  // Prevent infinite redirects by ensuring users are redirected only when necessary
-  if (sessionActive && role) {
-    const rootDashboard = "/root/dashboard";
-    const userDashboard = "/user/dashboard";
-
-    if (pathname === "/") {
-      return NextResponse.redirect(
-        new URL(role === "root" ? rootDashboard : userDashboard, request.url)
-      );
-    }
-
-    if (pathname.startsWith("/root/dashboard") && role !== "root") {
-      return NextResponse.redirect(new URL(userDashboard, request.url));
-    }
-
-    if (pathname.startsWith("/user/dashboard") && role !== "user") {
-      return NextResponse.redirect(new URL(rootDashboard, request.url));
+  for (const [expectedRole, path] of Object.entries(DASHBOARD_PATHS)) {
+    if (pathname.startsWith(path) && role !== expectedRole) {
+      const redirectPath =
+        DASHBOARD_PATHS[role as keyof typeof DASHBOARD_PATHS] || "/auth/signin";
+      return NextResponse.redirect(new URL(redirectPath, request.url));
     }
   }
 
@@ -89,9 +83,7 @@ async function isSessionValid(
   token: string | undefined,
   backendUrl: string
 ): Promise<"valid" | "invalid" | "backend_error"> {
-  if (!token) {
-    return "invalid";
-  }
+  if (!token) return "invalid";
 
   try {
     const path = `${backendUrl}/auth/get`;
@@ -101,17 +93,13 @@ async function isSessionValid(
     };
 
     const response = await fetchData<any>(path, options);
-
-    if (response?.status === "success") {
-      return "valid";
-    }
-    return "invalid";
-  } catch (error) {
+    return response?.status === "success" ? "valid" : "invalid";
+  } catch {
     return "backend_error";
   }
 }
 
-// Exclude API, authentication, and static assets from middleware
+// ✅ Apply only to role-based dashboards
 export const config = {
-  matcher: ["/root/:path*", "/user/:path*"],
+  matcher: ["/root/:path*", "/user/:path*", "/appadmin/dashboard/:path*"],
 };
