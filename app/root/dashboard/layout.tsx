@@ -5,7 +5,14 @@ import {
   SidebarItem,
   SidebarTopContent,
 } from "@/components/sidebar-layout";
-import { Globe, Settings2, Calendar, Users, Mic } from "lucide-react";
+import {
+  Globe,
+  Settings2,
+  Calendar,
+  Users,
+  Mic,
+  DollarSign,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navigationItems: SidebarItem[] = [
@@ -31,6 +38,12 @@ const navigationItems: SidebarItem[] = [
   },
   { type: "label", name: "Account" },
   { name: "Account", href: "/account", icon: Settings2, type: "item" },
+  {
+    name: "Subscription",
+    href: "/subscription",
+    icon: DollarSign,
+    type: "item",
+  },
 ];
 
 const navigationItemsGuest: SidebarItem[] = [
@@ -38,6 +51,12 @@ const navigationItemsGuest: SidebarItem[] = [
   { name: "Event", href: "/event", icon: Calendar, type: "item" },
   { type: "label", name: "Account" },
   { name: "Account", href: "/account", icon: Settings2, type: "item" },
+  {
+    name: "Subscription",
+    href: "/subscription",
+    icon: DollarSign,
+    type: "item",
+  },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
