@@ -31,7 +31,6 @@ export default function EventPage() {
 
   const fetchBasicRoles = async () => {
     try {
-      // const response = await getBasicRoles();
       const res = await fetch("/api/role/rolelist", { method: "GET" });
       const response = await res.json();
       if (

@@ -55,20 +55,6 @@ export default function EventPage() {
             <h2 className="text-2xl font-bold tracking-tight">Basic Role</h2>
           </div>
 
-          <div className="relative z-50 w-80" ref={searchRef}>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setIsDropdownOpen(true);
-              }}
-              onFocus={() => setIsDropdownOpen(true)}
-              placeholder="Search roles..."
-              className="w-full p-2 border rounded-md"
-            />
-          </div>
-
           {/* Role List */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {basicRoles.map((item, index) => (
