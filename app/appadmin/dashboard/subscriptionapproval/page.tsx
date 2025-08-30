@@ -36,7 +36,6 @@ export default function SubscriptionApprovalPage() {
         body: JSON.stringify(data),
       });
       const response = await res.json();
-      console.log("Fetched:", response);
 
       if (response.status === "success") {
         const subData = response.data?.subscription;
@@ -81,7 +80,6 @@ export default function SubscriptionApprovalPage() {
         body: JSON.stringify({ unique_code }),
       });
       const response = await res.json();
-      console.log("Approve response:", response);
 
       if (response.status === "success") {
         setSubscriptions((prev) =>

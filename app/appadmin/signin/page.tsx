@@ -60,8 +60,6 @@ function SignInFormContent() {
     });
 
     const response = await res.json();
-    console.log(response);
-
     if (response && response?.data) {
       setIsRedirecting(true);
       setTimeout(() => {

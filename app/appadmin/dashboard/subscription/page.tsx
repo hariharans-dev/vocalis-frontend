@@ -39,7 +39,6 @@ export default function SubscriptionsPage() {
         body: JSON.stringify(data),
       });
       const response = await res.json();
-      console.log("Fetched:", response);
 
       if (response.status === "success") {
         const subData = response.data?.subscription;
@@ -69,7 +68,6 @@ export default function SubscriptionsPage() {
       });
       const response = await res.json();
       setOpenMenuIndex(null);
-      console.log("Delete response:", response);
 
       if (response.status === "success") {
         setSubscriptions((prev) =>

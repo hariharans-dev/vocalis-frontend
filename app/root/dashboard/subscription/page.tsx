@@ -120,7 +120,6 @@ export default function EventPage() {
     setIsCreating(true);
     try {
       const data = { subscription_plan_name: newSubscription };
-      console.log(data);
       const res = await fetch("/api/subscription", {
         method: "POST",
         body: JSON.stringify(data),

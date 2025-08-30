@@ -61,7 +61,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         ?.split("=")[1];
       const cookie = raw ? JSON.parse(atob(raw)) : null;
       setRole(cookie?.role ?? null);
-      console.log(cookie);
     };
     fetchCookie();
   }, []);
