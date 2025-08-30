@@ -77,7 +77,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarLayout
       items={role === "root" ? navigationItems : navigationItemsGuest}
-      sidebarTop={<SidebarTopContent />}
+      sidebarTop={SidebarTopContent()}
       basePath={`/root/dashboard`}
     >
       {children}

@@ -81,56 +81,6 @@ export default async function IndexPage() {
           },
         ]}
       />
-
-      <div id="pricing" />
-      <PricingGrid
-        title="Simple, Transparent Pricing"
-        subtitle="Start free, scale as your events grow."
-        items={[
-          {
-            title: "Starter",
-            price: "Free",
-            description: "Perfect for individuals and small community events.",
-            features: [
-              "Unlimited text feedback",
-              "Up to 50 voice transcriptions/month",
-              "Basic sentiment analysis",
-              "Community support",
-            ],
-            buttonText: "Get Started Free",
-            buttonHref: "#",
-          },
-          {
-            title: "Pro",
-            price: "$29/mo",
-            description:
-              "Best for professional event organizers and growing teams.",
-            features: [
-              "Unlimited text & voice feedback",
-              "Advanced sentiment & trend analysis",
-              "Custom dashboards & exports",
-              "Priority email support",
-            ],
-            buttonText: "Upgrade to Pro",
-            isPopular: true,
-            buttonHref: "#",
-          },
-          {
-            title: "Enterprise",
-            price: "Custom",
-            description:
-              "Tailored solutions for large organizations and high-scale events.",
-            features: [
-              "Dedicated infrastructure",
-              "On-premise deployment options",
-              "Custom integrations (API, SSO, CRM)",
-              "24/7 premium support",
-            ],
-            buttonText: "Contact Sales",
-            buttonHref: "#",
-          },
-        ]}
-      />
     </>
   );
 }

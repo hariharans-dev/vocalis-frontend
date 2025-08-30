@@ -8,7 +8,6 @@ export default function Layout(props: { children: React.ReactNode }) {
         items={[
           { title: "Home", href: "/" },
           { title: "Features", href: "/#features" },
-          { title: "Pricing", href: "/#pricing" },
         ]}
       />
       <main className="flex-1">{props.children}</main>

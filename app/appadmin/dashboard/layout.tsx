@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  SidebarLayout,
-  SidebarItem,
-  SidebarTopContent,
-} from "@/components/sidebar-layout";
+import { SidebarLayout, SidebarItem, SidebarTopContent } from "@/components/sidebar-layout";
 import { Currency, Globe, CheckCircle2, Users, DollarSign } from "lucide-react";
 
 const navigationItems: SidebarItem[] = [
@@ -37,7 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarLayout
       items={navigationItems}
-      sidebarTop={<SidebarTopContent />}
+      sidebarTop={SidebarTopContent("appadmin")}
       basePath={`/appadmin/dashboard`}
     >
       {children}

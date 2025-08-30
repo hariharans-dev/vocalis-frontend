@@ -22,6 +22,12 @@ function SignInSignUpButtons() {
   return (
     <>
       <Link
+        href={"/appadmin"}
+        className={buttonVariants({ variant: "secondary" })}
+      >
+        App Admin
+      </Link>
+      <Link
         href={"/auth/signin"}
         className={buttonVariants({ variant: "secondary" })}
       >

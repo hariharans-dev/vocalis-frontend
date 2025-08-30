@@ -211,7 +211,11 @@ export function SidebarLayout(props: {
   );
 }
 
-export function SidebarTopContent() {
+export function SidebarTopContent(role?: string) {
+  if (role === "appadmin") {
+    return <div></div>;
+  }
+
   const [event, setEvent] = useState("No Event Selected");
   async function getEvent() {
     const raw = document.cookie
