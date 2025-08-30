@@ -10,37 +10,38 @@ import {
   Headphones,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function AppAdminLanding() {
   const router = useRouter();
 
   const features = [
     {
-      icon: <Activity className="h-12 w-12 text-primary" />,
+      icon: Activity,
       title: "Monitor the System",
       description:
         "Track system health, performance metrics, and ensure smooth operations in real-time.",
     },
     {
-      icon: <Layers className="h-12 w-12 text-primary" />,
+      icon: Layers,
       title: "Create Subscription Models",
       description:
         "Define new subscription plans with flexible limits, pricing, and features.",
     },
     {
-      icon: <FileEdit className="h-12 w-12 text-primary" />,
+      icon: FileEdit,
       title: "Maintain Subscriptions",
       description:
         "Update, edit, or retire existing subscription models to keep offerings current.",
     },
     {
-      icon: <CheckCircle className="h-12 w-12 text-primary" />,
+      icon: CheckCircle,
       title: "Approve Pending Payments",
       description:
         "Verify and approve payment requests for customer subscriptions securely.",
     },
     {
-      icon: <Headphones className="h-12 w-12 text-primary" />,
+      icon: Headphones,
       title: "Customer Support",
       description:
         "Assist customers with issues related to subscriptions, payments, and account access.",
@@ -50,44 +51,59 @@ export default function AppAdminLanding() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
       {/* Hero Section */}
-      <section className="py-20 text-center space-y-6">
-        <h1 className="text-4xl font-bold tracking-tight">
-          Welcome to the AppAdmin Console
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Manage system health, subscriptions, payments, and customer
-          interactions from a single, secure dashboard.
-        </p>
-        <Button
-          size="lg"
-          className="mt-4"
-          onClick={() => router.push("/appadmin/signin")}
-        >
-          Sign In to Continue
-        </Button>
+      <section className="relative py-24 text-center">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <span className="px-4 py-1 text-sm rounded-full bg-primary/10 text-primary font-medium tracking-wide">
+            AppAdmin Console
+          </span>
+          <h1 className="text-5xl font-bold tracking-tight">
+            Welcome to the Admin Dashboard
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Manage system health, subscriptions, payments, and customer
+            interactions from a single, secure dashboard.
+          </p>
+          <div className="flex justify-center gap-4 pt-6">
+            <Button size="lg" onClick={() => router.push("/appadmin/signin")}>
+              Sign In to Continue
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push("/")}
+            >
+              Back to Landing
+            </Button>
+          </div>
+        </div>
       </section>
 
       {/* Features Grid */}
-      <section className="py-16 max-w-6xl mx-auto px-6">
-        <h2 className="text-2xl font-bold text-center mb-4">
-          AppAdmin Capabilities
-        </h2>
-        <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-          Tools and controls available to AppAdmins for managing the platform.
-        </p>
+      <section className="py-20 max-w-6xl mx-auto px-6">
+        <div className="text-center mb-12 space-y-4">
+          <h2 className="text-3xl font-bold">AppAdmin Capabilities</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Tools and controls available to AppAdmins for managing the platform.
+          </p>
+        </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
-            <Card
+            <motion.div
               key={index}
-              className="p-6 text-center flex flex-col items-center space-y-4 hover:shadow-lg transition"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 200 }}
             >
-              {feature.icon}
-              <h3 className="text-xl font-semibold">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">
-                {feature.description}
-              </p>
-            </Card>
+              <Card className="p-8 text-center flex flex-col items-center space-y-4 hover:shadow-xl rounded-2xl border border-muted">
+                <div className="p-4 rounded-full bg-primary/10 text-primary w-fit">
+                  <feature.icon className="h-10 w-10" />
+                </div>
+                <h3 className="text-xl font-semibold">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {feature.description}
+                </p>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </section>
