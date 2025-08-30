@@ -20,6 +20,12 @@ const navigationItems: SidebarItem[] = [
   },
   { type: "label", name: "Subsciptions" },
   {
+    name: "Subscriptions",
+    href: "/subscription",
+    icon: DollarSign,
+    type: "item",
+  },
+  {
     name: "Subscription Approval",
     href: "/subscriptionapproval",
     icon: CheckCircle2,
